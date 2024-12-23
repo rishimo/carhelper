@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Tuple
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DocumentationType(str, Enum):
@@ -27,17 +27,33 @@ class ServiceType(str, Enum):
     INSPECTION = "INSPECTION"
 
 
+class FuelType(str, Enum):
+    """
+    Fuel type enum
+    """
+
+    REGULAR = "Regular"
+    PREMIUM = "Premium"
+    DIESEL = "Diesel"
+    ELECTRICITY = "Electricity"
+    OTHER = "Other"
+
+
 class Location(BaseModel):
     """
     Location model
     """
 
-    street_address: str
+    address: str
     city: str
     state: str
     zip_code: str
-    latitude: Optional[float]
-    longitude: Optional[float]
+    latitude: Optional[float] = Field(
+        description="Latitude of the location", default=None
+    )
+    longitude: Optional[float] = Field(
+        description="Longitude of the location", default=None
+    )
 
     def get_coordinates(self) -> Tuple[float, float]:
         if self.latitude is None or self.longitude is None:
