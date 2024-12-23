@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "carhelper"
+version = "0.1.0"
+description = ""
+authors = ["rishimo <rishimo2012@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pymongo = "^4.10.1"
+pydantic = "^2.10.4"
+pandas = "^2.2.3"
+pendulum = "^3.0.0"
+fastapi = "^0.115.6"
+requests = "^2.32.3"
+pydantic-extra-types = "^2.10.1"
+pyvin = "^0.0.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+mypy = "^1.14.0"
+pre-commit = "^4.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
