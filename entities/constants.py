@@ -1,9 +1,7 @@
 from enum import Enum
 from typing import Optional, Tuple
-from utils import create_hash
 
-from pydantic import BaseModel, field_validator
-from pyvin.utils import validate_vin
+from pydantic import BaseModel
 
 
 class DocumentationType(str, Enum):

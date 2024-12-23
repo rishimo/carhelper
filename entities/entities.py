@@ -1,6 +1,6 @@
 from typing import List, Optional
-from constants import Location, DocumentationType, ServiceType
-from utils import create_hash
+from entities.constants import Location, DocumentationType, ServiceType
+from entities.utils import create_hash
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_extra_types.pendulum_dt import DateTime
@@ -76,7 +76,7 @@ class ServiceItem(CustomIDModel):
     @classmethod
     def generate_id(cls, v: str | None, values: dict) -> str:
         if v is None:
-            return f"SERVICEITEM~{create_hash(values['service_type'], values['description'], str(values['cost']))}"
+            return f"SERVICE_ITEM~{create_hash(values['service_type'], values['description'], str(values['cost']))}"
         return v
 
 
