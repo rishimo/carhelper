@@ -5,8 +5,8 @@ from entities.fuel import Fuel
 from entities.location import Location
 from entities.odometer import OdometerReading
 from entities.service import Service, ServiceItem
-from entities.utils import create_hash
 from entities.user import User
+from entities.utils import create_hash
 from entities.vehicle import Vehicle
 from entities.vendor import Vendor
 

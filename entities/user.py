@@ -1,13 +1,13 @@
 from typing import List, Optional
 
+from pendulum import now, today
+from pydantic import EmailStr, Field, model_validator
+from pydantic_extra_types.pendulum_dt import DateTime
+from pymongo.operations import IndexModel
+
 from entities.base import CustomIDModel
 from entities.expense import Expense
 from entities.utils import create_hash
-
-from pendulum import now, today
-from pydantic import Field, model_validator, EmailStr
-from pydantic_extra_types.pendulum_dt import DateTime
-from pymongo.operations import IndexModel
 
 
 class User(CustomIDModel):

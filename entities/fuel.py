@@ -1,13 +1,12 @@
 from typing import Optional
 
-from entities.base import CustomIDModel
-from entities.enums import FuelType
-from entities.utils import create_hash
-from entities.vendor import Vendor
-
 from pendulum import today
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
+
+from entities.base import CustomIDModel
+from entities.enums import FuelType
+from entities.utils import create_hash
 
 
 class Fuel(CustomIDModel):
@@ -17,7 +16,7 @@ class Fuel(CustomIDModel):
     Attributes:
         VIN (str): Vehicle Identification Number
         date (DateTime): Date and time of fuel purchase
-        vendor (Vendor): Fuel vendor information
+        vendor_id (str): Fuel vendor ID
         fuel_type (FuelType): Type of fuel purchased
         units (float): Amount of fuel purchased
         price_per_unit (float): Cost per unit of fuel
@@ -26,7 +25,7 @@ class Fuel(CustomIDModel):
 
     VIN: str = Field(description="Vehicle VIN")
     date: DateTime = Field(default_factory=today)
-    vendor: Vendor = Field(description="Fuel vendor")
+    vendor_id: str = Field(description="Fuel vendor ID")
     fuel_type: FuelType = Field(description="Type of fuel purchased")
     units: float = Field(description="Units of fuel purchased")
     price_per_unit: float = Field(description="Price per unit of fuel")

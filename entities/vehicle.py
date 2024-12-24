@@ -1,15 +1,15 @@
 from typing import List, Optional
 
+from pydantic import Field, model_validator
+from pydantic_extra_types.pendulum_dt import DateTime
+from pymongo.operations import IndexModel
+
 from entities.base import CustomIDModel
 from entities.documentation import Documentation
 from entities.expense import Expense
 from entities.fuel import Fuel
 from entities.odometer import OdometerReading
 from entities.service import Service
-
-from pydantic import Field, model_validator
-from pydantic_extra_types.pendulum_dt import DateTime
-from pymongo.operations import IndexModel
 
 
 class Vehicle(CustomIDModel):

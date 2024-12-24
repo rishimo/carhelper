@@ -1,14 +1,14 @@
 from typing import List, Optional
 
-from entities.base import CustomIDModel
-from entities.enums import ServiceType
-from entities.documentation import Documentation
-from entities.utils import create_hash
-from entities.vendor import Vendor
-
 from pendulum import today
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
+
+from entities.base import CustomIDModel
+from entities.documentation import Documentation
+from entities.enums import ServiceType
+from entities.utils import create_hash
+from entities.vendor import Vendor
 
 
 class ServiceItem(CustomIDModel):
@@ -52,14 +52,14 @@ class Service(CustomIDModel):
     Attributes:
         VIN (str): Vehicle Identification Number
         date (DateTime): Date and time of the service
-        vendor (Vendor): Service provider information
+        vendor_id (str): Service provider ID
         total_cost (float): Total cost of all service items
         items (List[ServiceItem]): List of individual service items performed
     """
 
     VIN: str = Field(description="Vehicle VIN")
     date: DateTime = Field(default_factory=today)
-    vendor: Vendor
+    vendor_id: str = Field(description="Service vendor ID")
     cost: Optional[float] = Field(
         description="Total cost of all service items", default=None
     )

@@ -1,12 +1,12 @@
 from typing import Optional
 
-from entities.base import CustomIDModel
-from entities.location import Location
-from entities.utils import create_hash
-
 from pendulum import today
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
+
+from entities.base import CustomIDModel
+from entities.location import Location
+from entities.utils import create_hash
 
 
 class OdometerReading(CustomIDModel):
