@@ -4,11 +4,11 @@ from pendulum import today
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 
-from entities.base import CustomIDModel
-from entities.documentation import Documentation
-from entities.enums import ServiceType
-from entities.utils import create_hash
-from entities.vendor import Vendor
+from models.base import CustomIDModel
+from models.documentation import Documentation
+from models.enums import ServiceType
+from models.utils import create_hash
+from models.vendor import Vendor
 
 
 class ServiceItem(CustomIDModel):

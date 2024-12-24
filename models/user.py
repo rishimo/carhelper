@@ -5,9 +5,9 @@ from pydantic import EmailStr, Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 from pymongo.operations import IndexModel
 
-from entities.base import CustomIDModel
-from entities.expense import Expense
-from entities.utils import create_hash
+from models.base import CustomIDModel
+from models.expense import Expense
+from models.utils import create_hash
 
 
 class User(CustomIDModel):

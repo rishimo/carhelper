@@ -4,9 +4,9 @@ from pendulum import today
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 
-from entities.base import CustomIDModel
-from entities.enums import FuelType
-from entities.utils import create_hash
+from models.base import CustomIDModel
+from models.enums import FuelType
+from models.utils import create_hash
 
 
 class Fuel(CustomIDModel):

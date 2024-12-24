@@ -4,12 +4,12 @@ from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 from pymongo.operations import IndexModel
 
-from entities.base import CustomIDModel
-from entities.documentation import Documentation
-from entities.expense import Expense
-from entities.fuel import Fuel
-from entities.odometer import OdometerReading
-from entities.service import Service
+from models.base import CustomIDModel
+from models.documentation import Documentation
+from models.expense import Expense
+from models.fuel import Fuel
+from models.odometer import OdometerReading
+from models.service import Service
 
 
 class Vehicle(CustomIDModel):

@@ -3,9 +3,9 @@ from typing import Optional
 from pydantic import EmailStr, Field, HttpUrl, model_validator
 from pymongo.operations import IndexModel
 
-from entities.base import CustomIDModel
-from entities.location import Location
-from entities.utils import create_hash
+from models.base import CustomIDModel
+from models.location import Location
+from models.utils import create_hash
 
 
 class Vendor(CustomIDModel):

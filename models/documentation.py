@@ -2,9 +2,9 @@ from typing import Optional
 
 from pydantic import Field, model_validator
 
-from entities.base import CustomIDModel
-from entities.enums import DocumentationType
-from entities.utils import create_hash
+from models.base import CustomIDModel
+from models.enums import DocumentationType
+from models.utils import create_hash
 
 
 class Documentation(CustomIDModel):
