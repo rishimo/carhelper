@@ -1,5 +1,11 @@
 from typing import List, Optional
-from entities.constants import Location, DocumentationType, ServiceType, FuelType
+from entities.constants import (
+    Location,
+    DocumentationType,
+    ServiceType,
+    FuelType,
+    ExpenseType,
+)
 from entities.utils import create_hash
 
 from pydantic import BaseModel, Field, model_validator, model_validator
@@ -131,7 +137,7 @@ class Service(CustomIDModel):
     VIN: str = Field(description="Vehicle VIN")
     date: DateTime = Field(default_factory=today)
     vendor: Vendor
-    total_cost: Optional[float] = Field(
+    cost: Optional[float] = Field(
         description="Total cost of all service items", default=None
     )
     items: List[ServiceItem]
@@ -151,9 +157,9 @@ class Service(CustomIDModel):
 
     @model_validator(mode="before")
     @classmethod
-    def calculate_total_cost(cls, data: dict) -> dict:
-        if data.get("total_cost") is None:
-            data["total_cost"] = sum(item.cost for item in data.get("items", []))
+    def calculate_cost(cls, data: dict) -> dict:
+        if data.get("cost") is None:
+            data["cost"] = sum(item.cost for item in data.get("items", []))
         return data
 
 
@@ -177,7 +183,7 @@ class Fuel(CustomIDModel):
     fuel_type: FuelType = Field(description="Type of fuel purchased")
     units: float = Field(description="Units of fuel purchased")
     price_per_unit: float = Field(description="Price per unit of fuel")
-    total_cost: Optional[float] = Field(
+    cost: Optional[float] = Field(
         description="Total cost of the fuel purchase", default=None
     )
 
@@ -193,9 +199,9 @@ class Fuel(CustomIDModel):
 
     @model_validator(mode="before")
     @classmethod
-    def calculate_total_cost(cls, data: dict) -> dict:
-        if data.get("total_cost") is None:
-            data["total_cost"] = data.get("units") * data.get("price_per_unit")
+    def calculate_cp(cls, data: dict) -> dict:
+        if data.get("cost") is None:
+            data["cost"] = data.get("units") * data.get("price_per_unit")
         return data
 
 
@@ -230,6 +236,22 @@ class OdometerReading(CustomIDModel):
         return data
 
 
+class Expense(CustomIDModel):
+    """
+    Expense record, for any other expenses like parts, mods, tools, etc.
+    """
+
+    VIN: Optional[str] = Field(description="Vehicle VIN", default=None)
+    expense_type: ExpenseType = Field(description="Expense type")
+    date: DateTime = Field(default_factory=today)
+    vendor: Vendor = Field(description="Expense vendor")
+    description: str = Field(description="Expense description")
+    cost: float = Field(description="Expense cost")
+    documentation: List[Documentation] = Field(
+        description="Documentation for the expense", default_factory=list
+    )
+
+
 class Vehicle(CustomIDModel):
     """
     Primary vehicle record containing all vehicle-related information
@@ -251,6 +273,12 @@ class Vehicle(CustomIDModel):
     model: str = Field(description="Vehicle model")
     year: int = Field(description="Vehicle year")
     color: Optional[str] = Field(description="Vehicle color", default="NOT_SET")
+    purchase_date: Optional[DateTime] = Field(
+        description="Vehicle purchase date", default=None
+    )
+    purchase_price: Optional[float] = Field(
+        description="Vehicle purchase price", default=None
+    )
     odometer_records: Optional[List[OdometerReading]] = Field(
         default_factory=list, description="Odometer records"
     )
@@ -259,6 +287,9 @@ class Vehicle(CustomIDModel):
     )
     fuel_records: Optional[List[Fuel]] = Field(
         default_factory=list, description="Fuel records"
+    )
+    expenses: Optional[List[Expense]] = Field(
+        default_factory=list, description="Expenses"
     )
     documentation: Optional[List[Documentation]] = Field(
         default_factory=list, description="Documentation"
@@ -294,3 +325,19 @@ class Vehicle(CustomIDModel):
 
     def add_documentation(self, documentation: Documentation):
         self.documentation.append(documentation)
+
+    def add_expense(self, expense: Expense):
+        if expense.VIN != self.VIN:
+            raise ValueError("Expense VIN does not match vehicle VIN")
+        if not expense.VIN:
+            expense.VIN = self.VIN
+        self.expenses.append(expense)
+
+    def calculate_TCO(self) -> float:
+        tco = (
+            self.purchase_price
+            + sum(expense.cost for expense in self.expenses)
+            + sum(service.cost for service in self.service_records)
+            + sum(fuel.cost for fuel in self.fuel_records)
+        )
+        return tco

@@ -11,9 +11,22 @@ class DocumentationType(str, Enum):
 
     REPAIR_MANUAL = "REPAIR_MANUAL"
     SERVICE_RECORD = "SERVICE_RECORD"
+    RECEIPT = "RECEIPT"
+    INVOICE = "INVOICE"
     OWNER_MANUAL = "OWNER_MANUAL"
     SERVICE_INTERVAL = "SERVICE_INTERVAL"
-    WARRANTY_DOCUMENTATION = "WARRANTY_DOCUMENTATION"
+    WARRANTY = "WARRANTY"
+
+
+class ExpenseType(str, Enum):
+    """
+    Expense type enum
+    """
+
+    PARTS = "PARTS"
+    MODS = "MODS"
+    TOOLS = "TOOLS"
+    OTHER = "OTHER"
 
 
 class ServiceType(str, Enum):
