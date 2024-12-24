@@ -1,7 +1,7 @@
 from typing import Optional
 
 from entities.base import CustomIDModel
-from entities.constants import FuelType
+from entities.enums import FuelType
 from entities.utils import create_hash
 from entities.vendor import Vendor
 

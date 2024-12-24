@@ -6,6 +6,7 @@ from entities.location import Location
 from entities.odometer import OdometerReading
 from entities.service import Service, ServiceItem
 from entities.utils import create_hash
+from entities.user import User
 from entities.vehicle import Vehicle
 from entities.vendor import Vendor
 
@@ -20,6 +21,7 @@ __all__ = [
     "OdometerReading",
     "Service",
     "ServiceItem",
+    "User",
     "Vehicle",
     "Vendor",
 ]

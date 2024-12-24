@@ -1,14 +1,15 @@
 from typing import List, Optional
 
 from entities.base import CustomIDModel
+from entities.documentation import Documentation
+from entities.expense import Expense
+from entities.fuel import Fuel
 from entities.odometer import OdometerReading
 from entities.service import Service
-from entities.fuel import Fuel
-from entities.expense import Expense
-from entities.documentation import Documentation
 
 from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
+from pymongo.operations import IndexModel
 
 
 class Vehicle(CustomIDModel):
@@ -21,6 +22,7 @@ class Vehicle(CustomIDModel):
         model (str): Vehicle model name
         year (int): Vehicle manufacturing year
         color (Optional[str]): Vehicle color, defaults to "NOT_SET"
+        owner_id (Optional[str]): Vehicle owner ID
         odometer_records (Optional[List[OdometerReading]]): History of odometer readings
         service_records (Optional[List[Service]]): History of service visits
         fuel_records (Optional[List[Fuel]]): History of fuel purchases
@@ -32,6 +34,7 @@ class Vehicle(CustomIDModel):
     model: str = Field(description="Vehicle model")
     year: int = Field(description="Vehicle year")
     color: Optional[str] = Field(description="Vehicle color", default="NOT_SET")
+    owner_id: Optional[str] = Field(description="Vehicle owner ID", default=None)
     purchase_date: Optional[DateTime] = Field(
         description="Vehicle purchase date", default=None
     )
@@ -53,6 +56,16 @@ class Vehicle(CustomIDModel):
     documentation: Optional[List[Documentation]] = Field(
         default_factory=list, description="Documentation"
     )
+
+    class Settings:
+        name = "vehicles"
+        indexes = [
+            IndexModel([("owner_id", 1)]),
+            IndexModel([("service_records.date", -1)]),
+            IndexModel([("fuel_records.date", -1)]),
+            IndexModel([("odometer_records.date", -1)]),
+            IndexModel([("make", 1), ("model", 1), ("year", 1)]),
+        ]
 
     @model_validator(mode="before")
     @classmethod

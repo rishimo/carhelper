@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from entities.base import CustomIDModel
-from entities.constants import ExpenseType
+from entities.enums import ExpenseType
 from entities.documentation import Documentation
 from entities.utils import create_hash
 from entities.vendor import Vendor

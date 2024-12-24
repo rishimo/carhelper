@@ -4,7 +4,8 @@ from entities.base import CustomIDModel
 from entities.location import Location
 from entities.utils import create_hash
 
-from pydantic import Field, model_validator
+from pydantic import EmailStr, Field, HttpUrl, model_validator
+from pymongo.operations import IndexModel
 
 
 class Vendor(CustomIDModel):
@@ -13,17 +14,24 @@ class Vendor(CustomIDModel):
 
     Attributes:
         name (str): Name of the vendor/business
-        website (Optional[str]): Vendor's website URL
-        email (Optional[str]): Contact email address
+        website (Optional[HttpUrl]): Vendor's website URL
+        email (Optional[EmailStr]): Contact email address
         phone_number (Optional[str]): Contact phone number
         location (Location): Physical location of the vendor
     """
 
     name: str = Field(description="Vendor name")
-    website: Optional[str] = Field(description="Vendor website", default=None)
-    email: Optional[str] = Field(description="Vendor email", default=None)
+    website: Optional[HttpUrl] = Field(description="Vendor website", default=None)
+    email: Optional[EmailStr] = Field(description="Vendor email", default=None)
     phone_number: Optional[str] = Field(description="Vendor phone number", default=None)
     location: Location = Field(description="Vendor location")
+
+    class Settings:
+        name = "vendors"
+        indexes = [
+            IndexModel([("name", 1)]),  # TODO: support Atlas search
+            IndexModel([("location.city", 1), ("location.state", 1)]),
+        ]
 
     @model_validator(mode="before")
     @classmethod

@@ -1,7 +1,4 @@
 from enum import Enum
-from typing import Optional, Tuple
-
-from pydantic import BaseModel, Field
 
 
 class DocumentationType(str, Enum):
