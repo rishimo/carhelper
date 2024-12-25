@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi_jwt import JwtAccessBearer, JwtAuthorizationCredentials, JwtRefreshBearer
 from pendulum import duration
 
@@ -20,12 +22,12 @@ refresh_security = JwtRefreshBearer(
 )
 
 
-async def user_from_credentials(auth: JwtAuthorizationCredentials) -> User | None:
+async def user_from_credentials(auth: JwtAuthorizationCredentials) -> Optional[User]:
     """Return the user associated with auth credentials."""
-    return await User.by_email(auth.subject["username"])
+    return await User.find_by_email(auth.subject["username"])
 
 
-async def user_from_token(token: str) -> User | None:
+async def user_from_token(token: str) -> Optional[User]:
     """Return the user associated with a token value."""
     payload = access_security._decode(token)
-    return await User.by_email(payload["subject"]["username"])
+    return await User.find_by_email(payload["subject"]["username"])

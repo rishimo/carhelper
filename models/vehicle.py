@@ -75,6 +75,11 @@ class Vehicle(CustomIDModel):
             return data
         return data
 
+    @classmethod
+    async def find_by_vin(cls, vin: str) -> Optional["Vehicle"]:
+        """Find a vehicle by VIN."""
+        return await cls.find_one(cls.VIN == vin)
+
     def add_odometer_record(self, odometer_record: OdometerReading):
         if odometer_record.VIN != self.VIN:
             raise ValueError("Odometer record VIN does not match vehicle VIN")
