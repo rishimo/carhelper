@@ -1,3 +1,3 @@
-from config import CONFIG
+from server.config import CONFIG
 
 __all__ = ["CONFIG"]

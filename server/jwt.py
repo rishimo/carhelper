@@ -24,10 +24,10 @@ refresh_security = JwtRefreshBearer(
 
 async def user_from_credentials(auth: JwtAuthorizationCredentials) -> Optional[User]:
     """Return the user associated with auth credentials."""
-    return await User.find_by_email(auth.subject["username"])
+    return await User.find_by_email(auth.subject["email"])
 
 
 async def user_from_token(token: str) -> Optional[User]:
     """Return the user associated with a token value."""
     payload = access_security._decode(token)
-    return await User.find_by_email(payload["subject"]["username"])
+    return await User.find_by_email(payload["subject"]["email"])

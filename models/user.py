@@ -39,10 +39,21 @@ class UserPrivateView(UserPublicView):
     email: EmailStr
     first_name: str
     last_name: str
-    phone_number: Optional[str] = None
+    phone_number: Optional[str]
     vehicle_ids: List[str] = Field(default_factory=list)
     expenses: List[Expense] = Field(default_factory=list)
     last_login: DateTime
+
+
+class UserUpdateInput(BaseModel):
+    """User update input model."""
+
+    email: Optional[EmailStr] = Field(default=None)
+    username: Optional[str] = Field(default=None)
+    bio: Optional[str] = Field(default=None)
+    first_name: Optional[str] = Field(default=None)
+    last_name: Optional[str] = Field(default=None)
+    phone_number: Optional[str] = Field(default=None)
 
 
 class User(CustomIDModel):
@@ -54,7 +65,7 @@ class User(CustomIDModel):
     bio: Optional[str] = Field(description="User bio", default="")
     first_name: str = Field(description="User first name")
     last_name: str = Field(description="User last name")
-    phone_number: Optional[str] = Field(description="User phone number")
+    phone_number: Optional[str] = Field(description="User phone number", default="")
     vehicle_ids: List[str] = Field(
         description="User vehicles, list of VINs", default_factory=list
     )
@@ -62,7 +73,7 @@ class User(CustomIDModel):
         description="User's expenses (not associated with a vehicle)",
         default_factory=list,
     )
-    join_date: DateTime = Field(description="User join date", default=today())
+    join_date: DateTime = Field(description="User join date", default=now())
     last_login: DateTime = Field(description="User last login date", default=now())
 
     class Settings:
@@ -125,11 +136,26 @@ class User(CustomIDModel):
         """Find a user by username."""
         return await cls.find_one(cls.username == username)
 
-    def add_vehicle(self, vehicle_id: str):
+    async def add_vehicle(self, vehicle_id: str):
         self.vehicle_ids.append(vehicle_id)
+        await self.save()
+        return True
 
-    def add_expense(self, expense: Expense):
+    async def remove_vehicle(self, vehicle_id: str) -> bool:
+        self.vehicle_ids.remove(vehicle_id)
+        await self.save()
+        return True
+
+    async def add_expense(self, expense: Expense) -> bool:
         self.expenses.append(expense)
+        await self.save()
+        return True
 
+    async def remove_expense(self, expense_id: str) -> bool:
+        self.expenses.remove(expense_id)
+        await self.save()
+        return True
+
+    @property
     def jwt_subject(self) -> Dict[str, str]:
         return {"id": self.id, "email": self.email}
