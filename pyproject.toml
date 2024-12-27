@@ -24,6 +24,9 @@ fastapi-jwt = "^0.3.0"
 python-decouple = "^3.8"
 uvicorn = "^0.34.0"
 authlib = "^1.4.0"
+python-multipart = "^0.0.20"
+minio = "^7.2.13"
+python-slugify = "^8.0.4"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,9 +1,9 @@
 from enum import Enum
 
 
-class DocumentationType(str, Enum):
+class FileType(str, Enum):
     """
-    Documentation type enum
+    File type enum
     """
 
     REPAIR_MANUAL = "REPAIR_MANUAL"

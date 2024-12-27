@@ -5,8 +5,8 @@ from pydantic_extra_types.pendulum_dt import DateTime
 from pymongo.operations import IndexModel
 
 from models.base import CustomIDModel
-from models.documentation import Documentation
 from models.expense import Expense
+from models.file import File
 from models.fuel import Fuel
 from models.odometer import OdometerReading
 from models.service import Service
@@ -53,7 +53,7 @@ class Vehicle(CustomIDModel):
     expenses: Optional[List[Expense]] = Field(
         default_factory=list, description="Expenses"
     )
-    documentation: Optional[List[Documentation]] = Field(
+    attachments: Optional[List[File]] = Field(
         default_factory=list, description="Documentation"
     )
 
@@ -100,8 +100,8 @@ class Vehicle(CustomIDModel):
             raise ValueError("Fuel record VIN does not match vehicle VIN")
         self.fuel_records.append(fuel_record)
 
-    def add_documentation(self, documentation: Documentation):
-        self.documentation.append(documentation)
+    def add_attachment(self, attachment: File):
+        self.attachments.append(attachment)
 
     def add_expense(self, expense: Expense):
         if expense.VIN != self.VIN:

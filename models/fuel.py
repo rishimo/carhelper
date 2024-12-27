@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pendulum import today
 from pydantic import Field, model_validator
@@ -6,6 +6,7 @@ from pydantic_extra_types.pendulum_dt import DateTime
 
 from models.base import CustomIDModel
 from models.enums import FuelType
+from models.file import File
 from models.utils import create_hash
 
 
@@ -31,6 +32,9 @@ class Fuel(CustomIDModel):
     price_per_unit: float = Field(description="Price per unit of fuel")
     cost: Optional[float] = Field(
         description="Total cost of the fuel purchase", default=None
+    )
+    attachments: List[File] = Field(
+        description="Documentation for the fuel purchase", default_factory=list
     )
 
     @model_validator(mode="before")

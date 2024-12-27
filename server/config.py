@@ -15,5 +15,11 @@ class Settings(BaseModel):
     authjwt_secret_key: str = config("SECRET_KEY")
     salt: bytes = config("SALT").encode()
 
+    # Minio settings
+    minio_endpoint: str = config("MINIO_ENDPOINT")
+    minio_access_key: str = config("MINIO_ACCESS_KEY")
+    minio_secret_key: str = config("MINIO_SECRET_KEY")
+    minio_bucket_name: str = config("MINIO_BUCKET_NAME")
+
 
 CONFIG = Settings()

@@ -5,8 +5,8 @@ from pydantic import Field, model_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 
 from models.base import CustomIDModel
-from models.documentation import Documentation
 from models.enums import ServiceType
+from models.file import File
 from models.utils import create_hash
 from models.vendor import Vendor
 
@@ -19,7 +19,7 @@ class ServiceItem(CustomIDModel):
         service_type (ServiceType): Type of service performed (e.g., MAINTENANCE)
         description (str): Detailed description of the service performed
         cost (float): Cost of the individual service item
-        documentation (List[Documentation]): Related documentation for the service item
+        attachments (List[File]): Related documentation for the service item
     """
 
     service_type: ServiceType = Field(
@@ -27,7 +27,7 @@ class ServiceItem(CustomIDModel):
     )
     description: str = Field(description="Service description")
     cost: float = Field(description="Service cost")
-    documentation: List[Documentation] = Field(
+    attachments: List[File] = Field(
         description="Documentation for the service", default_factory=list
     )
 
