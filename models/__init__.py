@@ -1,6 +1,6 @@
 from models.base import CustomIDModel
 from models.expense import Expense, ExpenseItem
-from models.file import File
+from models.file import File, FileUpload
 from models.fuel import Fuel
 from models.location import Location
 from models.odometer import OdometerReading
@@ -23,6 +23,7 @@ __all__ = [
     "Expense",
     "ExpenseItem",
     "File",
+    "FileUpload",
     "Fuel",
     "Location",
     "OdometerReading",

@@ -5,6 +5,7 @@ import minio
 from fastapi import UploadFile
 
 from server import CONFIG
+from server.enums import FileUploadStatus
 
 logger = get_logger(__name__)
 
@@ -34,19 +35,38 @@ class MinioClient:
             self.client.make_bucket(CONFIG.minio_bucket_name)
             logger.info(f"Bucket {CONFIG.minio_bucket_name} created")
 
-    def upload_file(self, file: UploadFile) -> bool:
+    def _validate_file(self, file: UploadFile) -> FileUploadStatus:
+        """Validate a file."""
+
+        if file.size > 5 * 1024 * 1024:
+            logger.error("File is too large - exceeds 5MB")
+            return FileUploadStatus.FAILED_TOO_LARGE
+
+        if file.content_type not in ["application/pdf", "image/jpeg", "image/png"]:
+            logger.error("File is not a valid file type")
+            return FileUploadStatus.FAILED_INVALID_FILE_TYPE
+
+        return FileUploadStatus.SUCCESS
+
+    async def upload_file(self, file: UploadFile) -> FileUploadStatus:
         """Upload a file to Minio."""
+        valid = self._validate_file(file)
+
+        if valid != FileUploadStatus.SUCCESS:
+            return valid
+
         try:
             result = self.client.put_object(
-                CONFIG.minio_bucket_name, file.filename, file.file, file.size
+                CONFIG.minio_bucket_name, file.filename, await file.read(), file.size
             )
         except Exception as e:
             logger.error(f"Error uploading file to Minio: {e}")
-            return False
-        logger.info(f"File uploaded to Minio: {result.object_name}")
-        return True
+            return FileUploadStatus.FAILED_UNKNOWN
 
-    def get_file(self, filename: str) -> Optional[bytes]:
+        logger.info(f"File uploaded to Minio: {result.object_name}")
+        return FileUploadStatus.SUCCESS
+
+    async def get_file(self, filename: str) -> Optional[bytes]:
         """Get a file from Minio."""
         try:
             response = None
@@ -62,7 +82,7 @@ class MinioClient:
             logger.error(f"Error getting file from Minio: {e}")
             return None
 
-    def delete_file(self, filename: str) -> bool:
+    async def delete_file(self, filename: str) -> bool:
         """Delete a file from Minio."""
         try:
             self.client.remove_object(CONFIG.minio_bucket_name, filename)

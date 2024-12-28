@@ -29,11 +29,11 @@ async def current_user(
     return user
 
 
-def construct_filename(upload_filename: str, file_type: FileType) -> str:
+def construct_filename(upload_filename: str, file_type: FileType, user_id: str) -> str:
     """Construct a file name for storage."""
 
     # Clean up the filename
     filename = slugify(upload_filename)
 
     # Add the file type and timestamp to the filename
-    return f"{file_type.value}/{filename}/{now().to_iso8601_string()}"
+    return f"{user_id}/{file_type.value}/{filename}/{now().to_iso8601_string()}"
