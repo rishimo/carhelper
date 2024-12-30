@@ -6,7 +6,6 @@ from pydantic_extra_types.pendulum_dt import DateTime
 
 from models.base import CustomIDModel
 from models.enums import ExpenseType
-from models.file import File
 from models.utils import create_hash
 from models.vendor import Vendor
 
@@ -19,8 +18,8 @@ class ExpenseItem(CustomIDModel):
     expense_type: ExpenseType = Field(description="Expense type")
     description: str = Field(description="Expense description")
     cost: float = Field(description="Expense cost")
-    attachments: List[File] = Field(
-        description="Documentation for the expense item", default_factory=list
+    file_ids: List[str] = Field(
+        description="File IDs for the expense item", default_factory=list
     )
 
 
@@ -34,8 +33,8 @@ class Expense(CustomIDModel):
     vendor: Vendor = Field(description="Expense vendor")
     description: str = Field(description="Expense description")
     cost: float = Field(description="Expense cost")
-    attachments: List[File] = Field(
-        description="Documentation for the expense", default_factory=list
+    file_ids: List[str] = Field(
+        description="File IDs for the expense", default_factory=list
     )
     items: List[ExpenseItem] = Field(description="Expense items", default_factory=list)
 

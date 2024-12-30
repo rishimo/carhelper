@@ -2,6 +2,7 @@ from typing import Optional
 
 from fastapi import UploadFile
 from pydantic import BaseModel, Field, model_validator
+from pymongo.operations import IndexModel
 
 from models.base import CustomIDModel
 from models.enums import FileType
@@ -16,7 +17,7 @@ class FileUpload(BaseModel):
     entity_id: str = Field(
         description="Entity that the file is associated with",
     )
-    user_filename: str = Field(
+    title: str = Field(
         description="File name specified by the user",
     )
     file: UploadFile = Field(
@@ -25,6 +26,7 @@ class FileUpload(BaseModel):
     file_type: FileType = Field(
         description="File type",
     )
+    description: Optional[str] = Field(description="File description")
 
 
 class File(CustomIDModel):
@@ -40,14 +42,22 @@ class File(CustomIDModel):
 
     type: FileType = Field(default=FileType.RECEIPT, description="File type")
     title: str = Field(description="File title")
-    user_filename: str = Field(
-        description="File name specified by the user",
-    )
     internal_filename: str = Field(
         description="File name, like an S3 object name",
     )
     description: Optional[str] = Field(description="File description")
-    owner: str = Field(description="Owner of the file")
+    owner_user_id: str = Field(description="Owner of the file")
+    entity_id: str = Field(description="Entity that the file is associated with")
+    page_content: Optional[str] = Field(description="Page content of the file")
+
+    class Settings:
+        name = "files"
+        indexes = [
+            IndexModel([("owner_user_id", 1)]),
+            IndexModel([("internal_filename", 1)]),
+            IndexModel([("entity_id", 1)]),
+            IndexModel([("type", 1)]),
+        ]
 
     @model_validator(mode="before")
     @classmethod
@@ -56,6 +66,14 @@ class File(CustomIDModel):
             data["id"] = f"FILE~{create_hash(data.get('internal_filename', ''))}"
         return data
 
-    def check_owner(self, username: str) -> bool:
+    def check_owner(self, user_id: str) -> bool:
         """Check if the file is owned by the user."""
-        return self.owner == username
+        return self.owner_user_id == user_id
+
+
+class FileReturn(File):
+    """
+    File return model for file uploads
+    """
+
+    data: bytes = Field(description="File data")

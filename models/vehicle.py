@@ -53,9 +53,7 @@ class Vehicle(CustomIDModel):
     expenses: Optional[List[Expense]] = Field(
         default_factory=list, description="Expenses"
     )
-    attachments: Optional[List[File]] = Field(
-        default_factory=list, description="Documentation"
-    )
+    file_ids: Optional[List[str]] = Field(default_factory=list, description="File IDs")
 
     class Settings:
         name = "vehicles"
@@ -65,6 +63,7 @@ class Vehicle(CustomIDModel):
             IndexModel([("fuel_records.date", -1)]),
             IndexModel([("odometer_records.date", -1)]),
             IndexModel([("make", 1), ("model", 1), ("year", 1)]),
+            IndexModel([("file_ids", 1)]),
         ]
 
     @model_validator(mode="before")

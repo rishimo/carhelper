@@ -20,6 +20,7 @@ class Settings(BaseModel):
     minio_access_key: str = config("MINIO_ACCESS_KEY")
     minio_secret_key: str = config("MINIO_SECRET_KEY")
     minio_bucket_name: str = config("MINIO_BUCKET_NAME")
+    minio_secure: bool = config("MINIO_SECURE", cast=bool, default=False)
 
 
 CONFIG = Settings()

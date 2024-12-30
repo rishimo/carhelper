@@ -66,15 +66,19 @@ class User(CustomIDModel):
     first_name: str = Field(description="User first name")
     last_name: str = Field(description="User last name")
     phone_number: Optional[str] = Field(description="User phone number", default="")
-    vehicle_ids: List[str] = Field(
+    vehicle_ids: Optional[List[str]] = Field(
         description="User vehicles, list of VINs", default_factory=list
     )
-    expenses: List[Expense] = Field(
+    expenses: Optional[List[Expense]] = Field(
         description="User's expenses (not associated with a vehicle)",
         default_factory=list,
     )
     join_date: DateTime = Field(description="User join date", default=now())
     last_login: DateTime = Field(description="User last login date", default=now())
+    file_ids: Optional[List[str]] = Field(
+        description="User's files",
+        default_factory=list,
+    )
 
     class Settings:
         name = "users"
@@ -83,6 +87,7 @@ class User(CustomIDModel):
             IndexModel([("username", 1)], unique=True),
             IndexModel([("join_date", -1), ("last_login", -1)]),
             IndexModel([("vehicle_ids", 1)]),
+            IndexModel([("file_ids", 1)]),
         ]
 
     def to_public_view(self) -> UserPublicView:

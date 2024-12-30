@@ -1,4 +1,4 @@
-from logging import get_logger
+from logging import getLogger
 from typing import Optional
 
 import minio
@@ -7,7 +7,7 @@ from fastapi import UploadFile
 from server import CONFIG
 from server.enums import FileUploadStatus
 
-logger = get_logger(__name__)
+logger = getLogger(__name__)
 
 
 class MinioClient:
@@ -24,7 +24,10 @@ class MinioClient:
 
         if self.client is None:
             self.client = minio.Minio(
-                CONFIG.minio_endpoint, CONFIG.minio_access_key, CONFIG.minio_secret_key
+                endpoint=CONFIG.minio_endpoint,
+                access_key=CONFIG.minio_access_key,
+                secret_key=CONFIG.minio_secret_key,
+                secure=CONFIG.minio_secure,
             )
         logger.info("Minio client initialized")
 
@@ -56,6 +59,7 @@ class MinioClient:
             return valid
 
         try:
+            # TODO: use streaming from FastAPI
             result = self.client.put_object(
                 CONFIG.minio_bucket_name, file.filename, await file.read(), file.size
             )

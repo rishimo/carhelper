@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from asyncio import gather
 
-from models import File, FileUpload, User
+from fastapi import APIRouter, Depends, HTTPException
+
+from database.utils import add_file_to_entity_by_id, delete_file_from_entity_by_id
+from models import File, FileReturn, FileUpload, User
 from models.enums import FileType
 from server import MINIO_CLIENT
 from server.enums import FileUploadStatus
@@ -32,26 +35,60 @@ async def upload_file(input: FileUpload, user: User = Depends(current_user)):
         case FileUploadStatus.SUCCESS:
             pass
 
-    return filename
+    # create File object
+    file = File(
+        type=input.file_type,
+        title=input.title,
+        internal_filename=filename,
+        owner=user.id,
+        description=input.description,
+        entity_id=input.entity_id,
+    )
+
+    # associate the file with the corresponding entity
+    add_file = add_file_to_entity_by_id(file.id, input.entity_id)
+
+    await gather(add_file, file.save())
+
+    return file.id
 
 
-@router.get("/{filename}", response_model=bytes)
-async def get_file(filename: str, user: User = Depends(current_user)):
+@router.get("/{file_id}", response_model=FileReturn)
+async def get_file(file_id: str, user: User = Depends(current_user)):
     """
-    Get a file by its internal filename.
+    Get a file by its ID.
     Only the authorized user has access to the internal filename,
     so we can use it to check if the user is the owner of the file.
     """
-    if user.id not in filename:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-
-    file = MINIO_CLIENT.get_file(filename)
+    # get the file metadata from the database
+    file: File | None = await File.find_by_id(file_id)
     if file is None:
         raise HTTPException(status_code=404, detail="File not found")
-    return file
+
+    if not file.check_owner(user.id):
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
+    data = MINIO_CLIENT.get_file(file.internal_filename)
+    if data is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return FileReturn(data=data, **file.model_dump())
 
 
-@router.delete("/{filename}")
-async def delete_file(filename: str):
+@router.delete("/{file_id}")
+async def delete_file(file_id: str, user: User = Depends(current_user)):
     """Delete a file."""
-    return MINIO_CLIENT.delete_file(filename)
+    # get the file metadata from the database
+    file: File | None = await File.find_by_id(file_id)
+    if file is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    if not file.check_owner(user.id):
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
+    delete_file = file.delete()
+    delete_file_from_entity = delete_file_from_entity_by_id(file.id, file.entity_id)
+
+    await gather(delete_file, delete_file_from_entity)
+
+    return MINIO_CLIENT.delete_file(file.internal_filename)
