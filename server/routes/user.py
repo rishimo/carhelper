@@ -7,18 +7,24 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.get("", response_model=UserPublicView | UserPrivateView)
-async def get_user(user_id: str):
+async def get_user(user_id: str, current: User | None = Depends(current_user)):
     """Return the requested user - public or private view."""
-    user = await User.find_by_id(user_id)
+    # If user_id is 'me', use the current user
+    if user_id == "me":
+        if not current:
+            raise HTTPException(401, "Not authenticated")
+        return current.to_private_view()
 
+    # Otherwise, look up the requested user
+    user = await User.find_by_id(user_id)
     if user is None:
         raise HTTPException(404, "User not found")
 
-    # if the user is the current user, return the private view
-    if Depends(current_user):
+    # If the requested user is the current user, return private view
+    if current and user.id == current.id:
         return user.to_private_view()
 
-    # if the user is not the current user, return the public view
+    # Otherwise, return public view
     return user.to_public_view()
 
 
