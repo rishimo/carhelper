@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { api } from '../api';
-	import Modal from './Modal.svelte';
-	import toast from 'svelte-french-toast';
-	import type { OdometerReading } from '../generated';
+	import { api } from '@/lib/api';
+	import Modal from '@components/Modal.svelte';
+	import { toast } from 'svelte-sonner';
+	import type { OdometerReading } from '@models/OdometerReading';
 
 	export let open = false;
 	export let vehicleId: string;

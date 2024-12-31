@@ -1,31 +1,26 @@
 <script lang="ts">
 	import { api } from '@lib/api';
-	import Modal from '@components/Modal.svelte';
-	import { toast } from 'svelte-sonner';
-	import type { FileType } from '@lib/generated';
+	import Modal from './Modal.svelte';
+	import { toasts } from '@stores/toast';
 
 	export let open = false;
 	export let vehicleId: string;
 	export let onUpload: () => void;
 
-	let loading = false;
 	let file: File | null = null;
-	let title = '';
-	let fileType: FileType = FileType.RECEIPT;
 	let description = '';
+	let uploading = false;
 
 	async function handleSubmit() {
-		if (!file || !title) {
-			toast.error('Please select a file and enter a title');
+		if (!file) {
+			toasts.error('Please select a file');
 			return;
 		}
 
-		loading = true;
+		uploading = true;
 		try {
 			const formData = new FormData();
 			formData.append('file', file);
-			formData.append('title', title);
-			formData.append('file_type', fileType);
 			if (description) {
 				formData.append('description', description);
 			}
@@ -35,31 +30,27 @@
 				formData
 			});
 
-			toast.success('File uploaded successfully');
+			toasts.success('File uploaded successfully');
 			onUpload();
+			open = false;
 			resetForm();
-		} catch (error) {
-			console.error('Failed to upload file:', error);
-			toast.error('Failed to upload file');
+		} catch (err) {
+			console.error('Failed to upload file:', err);
+			toasts.error('Failed to upload file');
 		} finally {
-			loading = false;
+			uploading = false;
 		}
 	}
 
 	function handleFileChange(event: Event) {
-		const input = event.target as HTMLInputElement;
-		if (input.files && input.files[0]) {
-			file = input.files[0];
-			if (!title) {
-				title = file.name;
-			}
+		const target = event.target as HTMLInputElement;
+		if (target.files && target.files.length > 0) {
+			file = target.files[0];
 		}
 	}
 
 	function resetForm() {
 		file = null;
-		title = '';
-		fileType = FileType.RECEIPT;
 		description = '';
 	}
 
@@ -69,59 +60,35 @@
 	}
 </script>
 
-<Modal title="Upload File" bind:open on:close={handleClose}>
+<Modal title="Upload File" {open} on:close={handleClose}>
 	<form on:submit|preventDefault={handleSubmit} class="space-y-4">
 		<div>
-			<label for="file" class="label">File *</label>
+			<label for="file" class="block text-sm font-medium text-gray-700">File</label>
 			<input
 				type="file"
 				id="file"
-				class="input"
+				class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
 				on:change={handleFileChange}
-				accept="image/*,application/pdf"
-				required
 			/>
 		</div>
 
 		<div>
-			<label for="title" class="label">Title *</label>
+			<label for="description" class="block text-sm font-medium text-gray-700">Description</label>
 			<input
 				type="text"
-				id="title"
-				class="input"
-				bind:value={title}
-				placeholder="File title"
-				required
-			/>
-		</div>
-
-		<div>
-			<label for="file-type" class="label">File Type</label>
-			<select id="file-type" class="input" bind:value={fileType}>
-				{#each Object.values(FileType) as type}
-					<option value={type}>{type}</option>
-				{/each}
-			</select>
-		</div>
-
-		<div>
-			<label for="description" class="label">Description</label>
-			<textarea
 				id="description"
-				class="input"
 				bind:value={description}
-				placeholder="File description"
-				rows="3"
+				class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
 			/>
 		</div>
 
 		<div class="flex justify-end space-x-3">
 			<button type="button" class="btn btn-secondary" on:click={handleClose}>Cancel</button>
-			<button type="submit" class="btn btn-primary" disabled={loading}>
-				{#if loading}
+			<button type="submit" class="btn btn-primary" disabled={uploading}>
+				{#if uploading}
 					<div class="animate-spin rounded-full h-4 w-4 border-t-2 border-white mr-2" />
 				{/if}
-				Upload File
+				Upload
 			</button>
 		</div>
 	</form>

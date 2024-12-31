@@ -40,8 +40,10 @@
 	}
 
 	function handleDeleteClick({ detail }: CustomEvent<{ id: string }>) {
+		console.log('Delete event received for vehicle:', detail.id);
 		const vehicle = vehicles.find((v) => v._id === detail.id);
 		if (vehicle) {
+			console.log('Found vehicle to delete:', vehicle);
 			vehicleToDelete = vehicle;
 			showDeleteModal = true;
 		}
@@ -51,6 +53,7 @@
 		if (!vehicleToDelete) return;
 
 		try {
+			console.log('Confirming delete for vehicle:', vehicleToDelete._id);
 			await api.vehicle.deleteVehicleVehicleVehicleIdDelete({
 				vehicleId: vehicleToDelete._id
 			});

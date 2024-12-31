@@ -17,7 +17,8 @@ async def create_vehicle(vehicle: Vehicle, user: User = Depends(current_user)):
     if existing is not None:
         raise HTTPException(409, "Vehicle with that VIN already exists")
 
-    # Create vehicle
+    # Create vehicle and set owner
+    vehicle.owner_id = user.id
     await vehicle.create()
 
     # Associate with user
@@ -136,6 +137,8 @@ async def add_odometer_reading(
     if not vehicle:
         raise HTTPException(404, "Vehicle not found")
 
+    # Set the VIN from the vehicle
+    reading.VIN = vehicle.VIN
     vehicle.add_odometer_record(reading)
     await vehicle.save()
 

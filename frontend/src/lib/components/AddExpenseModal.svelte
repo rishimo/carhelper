@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { api } from '@/lib/api';
-	import Modal from './Modal.svelte';
-	import toast from 'svelte-french-toast';
+	import Modal from '@components/Modal.svelte';
+	import { toast } from 'svelte-sonner';
 	import type { Expense_Input } from '@models/Expense_Input';
 	import { ExpenseType } from '@models/ExpenseType';
 

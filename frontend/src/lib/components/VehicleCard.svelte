@@ -1,83 +1,90 @@
 <script lang="ts">
-	import type { Vehicle_Output } from '@models/Vehicle_Output';
-	import { Car, Gauge, DollarSign, Calendar, Trash2 } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
+	import type { Vehicle_Output } from '@lib/generated';
+	import { goto } from '$app/navigation';
+	import { Car, Gauge, Calendar, Clock } from 'lucide-svelte';
+	import { theme } from '@lib/theme/colors';
 
 	export let vehicle: Vehicle_Output;
+	export let showIcon = true;
 
-	const dispatch = createEventDispatcher<{
-		delete: { id: string };
-	}>();
+	function handleCardClick() {
+		goto(`/vehicle/${vehicle._id}`);
+	}
 
+	// Calculate current mileage
 	$: currentMileage = vehicle.odometer_records?.length
 		? vehicle.odometer_records[vehicle.odometer_records.length - 1].reading
 		: 0;
 
-	$: totalCost =
-		vehicle.service_records?.reduce((acc: number, record) => acc + (record.cost || 0), 0) || 0;
+	// Get the most recent event
+	$: lastEvent = (() => {
+		const events = [
+			...(vehicle.service_records || [])
+				.filter((r) => r.date)
+				.map((r) => ({ type: 'Service', date: new Date(r.date!) })),
+			...(vehicle.fuel_records || [])
+				.filter((r) => r.date)
+				.map((r) => ({ type: 'Fuel', date: new Date(r.date!) })),
+			...(vehicle.odometer_records || [])
+				.filter((r) => r.date)
+				.map((r) => ({ type: 'Odometer', date: new Date(r.date!) }))
+		].sort((a, b) => b.date.getTime() - a.date.getTime());
 
-	function handleDelete(e: MouseEvent) {
-		e.preventDefault(); // Prevent navigation
-		dispatch('delete', { id: vehicle._id });
+		return events[0] || null;
+	})();
+
+	function formatDate(date: Date) {
+		return date.toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric'
+		});
 	}
 </script>
 
-<a href={`/vehicle/${vehicle._id}`} class="block">
-	<div class="card group hover:shadow-md transition-shadow">
-		<div class="flex items-start justify-between">
-			<div class="flex items-center space-x-3">
-				<div class="rounded-lg bg-primary-50 p-3 group-hover:bg-primary-100 transition-colors">
-					<Car class="h-6 w-6 text-primary-600" />
-				</div>
-				<div>
-					<h3 class="font-semibold text-gray-900">
-						{vehicle.year}
-						{vehicle.make}
-						{vehicle.model}
-					</h3>
-					<p class="text-sm text-gray-500">VIN: {vehicle.VIN}</p>
-				</div>
+<div
+	class="bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-shadow"
+	on:click={handleCardClick}
+>
+	<div class="flex items-start space-x-3">
+		{#if showIcon}
+			<div class="rounded-lg bg-primary-50 p-3 group-hover:bg-primary-100 transition-colors">
+				<Car class="h-6 w-6" style="color: {theme.primary}" />
 			</div>
-			<div class="flex items-center space-x-2">
-				{#if vehicle.color}
-					<span
-						class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium capitalize"
-						style="background-color: {vehicle.color}25; color: {vehicle.color}"
-					>
-						{vehicle.color}
-					</span>
+		{/if}
+		<div class="flex-grow">
+			<h3 class="text-lg font-semibold text-gray-900">
+				{vehicle.year}
+				{vehicle.make}
+				{vehicle.model}
+			</h3>
+			<p class="mt-1 text-sm text-gray-500">VIN: {vehicle.VIN}</p>
+
+			<div class="mt-4 grid grid-cols-2 gap-4">
+				<div class="flex items-center space-x-2">
+					<Gauge class="h-4 w-4 text-gray-400" />
+					<span class="text-sm text-gray-600">{currentMileage.toLocaleString()} miles</span>
+				</div>
+
+				{#if vehicle.purchase_date}
+					<div class="flex items-center space-x-2">
+						<Calendar class="h-4 w-4 text-gray-400" />
+						<span class="text-sm text-gray-600">
+							{formatDate(new Date(vehicle.purchase_date))}
+						</span>
+					</div>
 				{/if}
-				<button
-					class="p-1 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-					on:click={handleDelete}
-					title="Delete vehicle"
-				>
-					<Trash2 class="h-4 w-4" />
-				</button>
-			</div>
-		</div>
 
-		<div class="mt-6 grid grid-cols-3 gap-4 border-t border-gray-100 pt-4">
-			<div class="flex items-center space-x-2">
-				<Gauge class="h-4 w-4 text-gray-400" />
-				<span class="text-sm text-gray-600">{currentMileage.toLocaleString()} miles</span>
-			</div>
-
-			<div class="flex items-center space-x-2">
-				<DollarSign class="h-4 w-4 text-gray-400" />
-				<span class="text-sm text-gray-600">${totalCost.toLocaleString()}</span>
-			</div>
-
-			<div class="flex items-center space-x-2">
-				<Calendar class="h-4 w-4 text-gray-400" />
-				<span class="text-sm text-gray-600">
-					{#if vehicle.purchase_date}
-						{new Date(vehicle.purchase_date).toLocaleDateString()}
-					{:else}
-						Not set
-					{/if}
-				</span>
+				{#if lastEvent}
+					<div class="flex items-center space-x-2 col-span-2">
+						<Clock class="h-4 w-4 text-gray-400" />
+						<span class="text-sm text-gray-600">
+							Last {lastEvent.type}: {formatDate(lastEvent.date)}
+						</span>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
-</a>
+</div>
