@@ -44,3 +44,4 @@ export type FileReturn = {
      */
     data: Blob;
 };
+

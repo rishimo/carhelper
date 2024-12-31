@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { api } from '@/lib/api';
 	import Modal from '@components/Modal.svelte';
-	import toast from 'svelte-french-toast';
-	import type { Vehicle_Output } from '@models';
+	import { toast } from 'svelte-sonner';
+	import type { Vehicle_Output } from '@lib/generated';
 
 	export let open = false;
 	export let onAdd: (vehicle: Vehicle_Output) => void;

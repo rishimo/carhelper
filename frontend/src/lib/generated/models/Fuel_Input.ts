@@ -51,3 +51,4 @@ export type Fuel_Input = {
      */
     attachments?: Array<File>;
 };
+

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { api } from '$lib/api';
+	import { api } from '@lib/api';
 	import { onMount } from 'svelte';
 	import { Plus } from 'lucide-svelte';
-	import type { Vehicle_Output } from '$lib/generated/models';
-	import VehicleCard from '$lib/components/VehicleCard.svelte';
-	import AddVehicleModal from '$lib/components/AddVehicleModal.svelte';
-	import Modal from '$lib/components/Modal.svelte';
-	import toast from 'svelte-french-toast';
-	import { auth } from '$lib/stores/auth';
+	import type { Vehicle_Output } from '@models/Vehicle_Output';
+	import VehicleCard from '@components/VehicleCard.svelte';
+	import AddVehicleModal from '@components/AddVehicleModal.svelte';
+	import Modal from '@components/Modal.svelte';
+	import { toast } from 'svelte-sonner';
+	import { auth } from '@stores/auth';
 	import { goto } from '$app/navigation';
 
 	let vehicles: Array<Vehicle_Output> = [];
@@ -16,12 +16,7 @@
 	let showDeleteModal = false;
 	let vehicleToDelete: Vehicle_Output | null = null;
 
-	onMount(async () => {
-		if (!$auth.user) {
-			goto('/');
-			return;
-		}
-
+	async function loadVehicles() {
 		try {
 			const response = await api.vehicle.getMyVehiclesVehicleMyGet();
 			vehicles = response;
@@ -31,14 +26,21 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
+
+	// Subscribe to auth changes
+	$: if (!$auth.loading && $auth.user) {
+		loadVehicles();
+	} else if (!$auth.loading && !$auth.user) {
+		goto('/');
+	}
 
 	function handleVehicleAdded(vehicle: Vehicle_Output) {
 		vehicles = [...vehicles, vehicle];
 	}
 
 	function handleDeleteClick({ detail }: CustomEvent<{ id: string }>) {
-		const vehicle = vehicles.find((v) => v.id === detail.id);
+		const vehicle = vehicles.find((v) => v._id === detail.id);
 		if (vehicle) {
 			vehicleToDelete = vehicle;
 			showDeleteModal = true;
@@ -50,9 +52,9 @@
 
 		try {
 			await api.vehicle.deleteVehicleVehicleVehicleIdDelete({
-				vehicleId: vehicleToDelete.id
+				vehicleId: vehicleToDelete._id
 			});
-			vehicles = vehicles.filter((v) => v.id !== vehicleToDelete?.id);
+			vehicles = vehicles.filter((v) => v._id !== vehicleToDelete?._id);
 			toast.success('Vehicle deleted successfully');
 		} catch (error) {
 			console.error('Failed to delete vehicle:', error);
@@ -73,7 +75,7 @@
 		</button>
 	</div>
 
-	{#if loading}
+	{#if $auth.loading || loading}
 		<div class="flex justify-center py-12">
 			<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-primary-600" />
 		</div>
@@ -90,7 +92,7 @@
 		</div>
 	{:else}
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each vehicles as vehicle (vehicle.id)}
+			{#each vehicles as vehicle (vehicle._id)}
 				<VehicleCard {vehicle} on:delete={handleDeleteClick} />
 			{/each}
 		</div>

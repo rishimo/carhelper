@@ -8,7 +8,6 @@ from models.base import CustomIDModel
 from models.enums import ServiceType
 from models.file import File
 from models.utils import create_hash
-from models.vendor import Vendor
 
 
 class ServiceItem(CustomIDModel):

@@ -19,3 +19,4 @@ export type Location = {
      */
     longitude?: (number | null);
 };
+

@@ -15,6 +15,7 @@ class UserAuthInput(BaseModel):
 
     email: EmailStr
     password: str
+    remember_me: bool = False
 
 
 class UserSignupInput(UserAuthInput):

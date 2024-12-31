@@ -28,3 +28,4 @@ export type OdometerReading = {
      */
     location?: (Location | null);
 };
+

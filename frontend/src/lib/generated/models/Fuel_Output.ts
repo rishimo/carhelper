@@ -51,3 +51,4 @@ export type Fuel_Output = {
      */
     attachments?: Array<File>;
 };
+

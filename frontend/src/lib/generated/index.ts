@@ -8,6 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AccessToken } from './models/AccessToken';
+export type { Body_upload_file_vehicle__vehicle_id__files_post } from './models/Body_upload_file_vehicle__vehicle_id__files_post';
 export type { Expense_Input } from './models/Expense_Input';
 export type { Expense_Output } from './models/Expense_Output';
 export type { ExpenseItem } from './models/ExpenseItem';

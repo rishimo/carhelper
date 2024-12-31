@@ -29,16 +29,20 @@
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.0.0",
-		"vite": "^5.4.11"
+		"vite": "^6.0.6"
 	},
 	"dependencies": {
 		"@tailwindcss/forms": "^0.5.9",
 		"autoprefixer": "^10.4.20",
 		"axios": "^1.7.9",
+		"flowbite-svelte": "^0.47.4",
 		"lucide-svelte": "^0.469.0",
 		"openapi-typescript-codegen": "^0.29.0",
 		"postcss": "^8.4.49",
-		"svelte-french-toast": "^1.2.0",
+		"svelte-sonner": "^0.3.28",
 		"tailwindcss": "^3.4.17"
+	},
+	"exports": {
+		".": "./"
 	}
 }

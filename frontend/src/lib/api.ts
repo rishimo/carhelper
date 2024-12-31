@@ -1,8 +1,8 @@
-import { AuthService } from './generated/services/AuthService';
-import { RegisterService } from './generated/services/RegisterService';
-import { UserService } from './generated/services/UserService';
-import { VehicleService } from './generated/services/VehicleService';
-import { OpenAPI } from './generated/core/OpenAPI';
+import { AuthService } from '@services/AuthService';
+import { RegisterService } from '@services/RegisterService';
+import { UserService } from '@services/UserService';
+import { VehicleService } from '@services/VehicleService';
+import { OpenAPI } from '@core/OpenAPI';
 import { browser } from '$app/environment';
 
 // Configure base URL and credentials

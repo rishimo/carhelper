@@ -2,7 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { Body_upload_file_vehicle__vehicle_id__files_post } from '../models/Body_upload_file_vehicle__vehicle_id__files_post';
+import type { Fuel_Input } from '../models/Fuel_Input';
+import type { Fuel_Output } from '../models/Fuel_Output';
 import type { OdometerReading } from '../models/OdometerReading';
+import type { Service_Input } from '../models/Service_Input';
+import type { Service_Output } from '../models/Service_Output';
 import type { Vehicle_Input } from '../models/Vehicle_Input';
 import type { Vehicle_Output } from '../models/Vehicle_Output';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -155,6 +160,89 @@ export class VehicleService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Add Service Record
+     * Add a service record to a vehicle.
+     * @returns Service_Output Successful Response
+     * @throws ApiError
+     */
+    public static addServiceRecordVehicleVehicleIdServicePost({
+        vehicleId,
+        requestBody,
+    }: {
+        vehicleId: string,
+        requestBody: Service_Input,
+    }): CancelablePromise<Service_Output> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/vehicle/{vehicle_id}/service',
+            path: {
+                'vehicle_id': vehicleId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Add Fuel Record
+     * Add a fuel record to a vehicle.
+     * @returns Fuel_Output Successful Response
+     * @throws ApiError
+     */
+    public static addFuelRecordVehicleVehicleIdFuelPost({
+        vehicleId,
+        requestBody,
+    }: {
+        vehicleId: string,
+        requestBody: Fuel_Input,
+    }): CancelablePromise<Fuel_Output> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/vehicle/{vehicle_id}/fuel',
+            path: {
+                'vehicle_id': vehicleId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Upload File
+     * Upload a file associated with the vehicle.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static uploadFileVehicleVehicleIdFilesPost({
+        vehicleId,
+        formData,
+        description,
+    }: {
+        vehicleId: string,
+        formData: Body_upload_file_vehicle__vehicle_id__files_post,
+        description?: (string | null),
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/vehicle/{vehicle_id}/files',
+            path: {
+                'vehicle_id': vehicleId,
+            },
+            query: {
+                'description': description,
+            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
             errors: {
                 422: `Validation Error`,
             },

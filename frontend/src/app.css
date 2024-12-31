@@ -3,37 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-gray-50 text-gray-900;
-  }
+	body {
+		@apply bg-gray-50 text-gray-900;
+	}
 }
 
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
-  }
+	.btn {
+		@apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+	}
 
-  .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-500;
-  }
+	.btn-primary {
+		@apply bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-500;
+	}
 
-  .btn-secondary {
-    @apply bg-white text-gray-900 border border-gray-200 hover:bg-gray-100 focus-visible:ring-gray-500;
-  }
+	.btn-secondary {
+		@apply bg-white text-gray-900 border border-gray-200 hover:bg-gray-100 focus-visible:ring-gray-500;
+	}
 
-  .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500;
-  }
+	.btn-danger {
+		@apply bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500;
+	}
 
-  .input {
-    @apply block w-full rounded-md border-gray-200 shadow-sm text-sm focus:border-primary-500 focus:ring-primary-500;
-  }
+	.input {
+		@apply block w-full rounded-md border-gray-200 shadow-sm text-sm focus:border-primary-500 focus:ring-primary-500;
+	}
 
-  .label {
-    @apply block text-sm font-medium text-gray-700;
-  }
+	.label {
+		@apply block text-sm font-medium text-gray-700;
+	}
 
-  .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
-  }
+	.card {
+		@apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+	}
 }

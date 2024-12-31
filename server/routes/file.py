@@ -2,7 +2,8 @@ from asyncio import gather
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database.utils import add_file_to_entity_by_id, delete_file_from_entity_by_id
+from database.utils import (add_file_to_entity_by_id,
+                            delete_file_from_entity_by_id)
 from models import File, FileReturn, FileUpload, User
 from models.enums import FileType
 from server import MINIO_CLIENT

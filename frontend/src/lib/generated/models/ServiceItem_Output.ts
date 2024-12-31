@@ -35,3 +35,4 @@ export type ServiceItem_Output = {
      */
     attachments?: Array<File>;
 };
+

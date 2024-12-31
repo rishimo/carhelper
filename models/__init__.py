@@ -5,14 +5,8 @@ from models.fuel import Fuel
 from models.location import Location
 from models.odometer import OdometerReading
 from models.service import Service, ServiceItem
-from models.user import (
-    User,
-    UserAuthInput,
-    UserPrivateView,
-    UserPublicView,
-    UserSignupInput,
-    UserUpdateInput,
-)
+from models.user import (User, UserAuthInput, UserPrivateView, UserPublicView,
+                         UserSignupInput, UserUpdateInput)
 from models.utils import create_hash
 from models.vehicle import Vehicle
 from models.vendor import Vendor

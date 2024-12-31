@@ -20,13 +20,15 @@ async def login(input: UserAuthInput, response: Response) -> AccessToken:
     refresh_token = refresh_security.create_refresh_token(user.jwt_subject)
 
     # Set refresh token as secure HTTP-only cookie
+    # If remember_me is True, set max_age to 7 days, otherwise 1 day
+    max_age = 60 * 60 * 24 * 7 if input.remember_me else 60 * 60 * 24
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=60 * 60 * 24 * 30,  # 30 days
+        max_age=max_age,
     )
 
     return AccessToken(access_token=access_token)
@@ -39,3 +41,12 @@ async def refresh(
     """Return a new access token from a refresh token."""
     access_token = access_security.create_access_token(subject=auth.subject)
     return AccessToken(access_token=access_token)
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    """Logout the user by clearing their refresh token cookie."""
+    response.delete_cookie(
+        key="refresh_token", httponly=True, secure=True, samesite="lax"
+    )
+    return {"message": "Successfully logged out"}

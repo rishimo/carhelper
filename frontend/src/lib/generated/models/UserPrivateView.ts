@@ -18,3 +18,4 @@ export type UserPrivateView = {
     expenses?: Array<Expense_Output>;
     last_login: string;
 };
+

@@ -38,3 +38,4 @@ export type Expense_Output = {
      */
     items?: Array<ExpenseItem>;
 };
+

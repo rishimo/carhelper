@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Vehicle } from '$lib/generated/models';
+	import type { Vehicle_Output } from '@models/Vehicle_Output';
 	import { Car, Gauge, DollarSign, Calendar, Trash2 } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let vehicle: Vehicle;
+	export let vehicle: Vehicle_Output;
 
 	const dispatch = createEventDispatcher<{
 		delete: { id: string };
@@ -14,15 +14,15 @@
 		: 0;
 
 	$: totalCost =
-		vehicle.service_records?.reduce((acc: number, record) => acc + record.cost, 0) || 0;
+		vehicle.service_records?.reduce((acc: number, record) => acc + (record.cost || 0), 0) || 0;
 
 	function handleDelete(e: MouseEvent) {
 		e.preventDefault(); // Prevent navigation
-		dispatch('delete', { id: vehicle.id });
+		dispatch('delete', { id: vehicle._id });
 	}
 </script>
 
-<a href={`/vehicle/${vehicle.id}`} class="block">
+<a href={`/vehicle/${vehicle._id}`} class="block">
 	<div class="card group hover:shadow-md transition-shadow">
 		<div class="flex items-start justify-between">
 			<div class="flex items-center space-x-3">

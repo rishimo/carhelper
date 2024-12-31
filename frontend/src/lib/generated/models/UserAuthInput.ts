@@ -9,3 +9,4 @@ export type UserAuthInput = {
     email: string;
     password: string;
 };
+

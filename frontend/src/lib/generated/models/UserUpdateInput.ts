@@ -13,3 +13,4 @@ export type UserUpdateInput = {
     last_name?: (string | null);
     phone_number?: (string | null);
 };
+

@@ -1,6 +1,7 @@
 from typing import Optional
 
-from fastapi_jwt import JwtAccessBearer, JwtAuthorizationCredentials, JwtRefreshBearer
+from fastapi_jwt import (JwtAccessBearer, JwtAuthorizationCredentials,
+                         JwtRefreshBearer)
 from pendulum import duration
 
 from models import User

@@ -10,3 +10,4 @@ export type UserPublicView = {
     bio?: (string | null);
     join_date: string;
 };
+

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from models import Expense, User, UserPrivateView, UserPublicView, UserUpdateInput
+from models import (Expense, User, UserPrivateView, UserPublicView,
+                    UserUpdateInput)
 from server.utils import current_user
 
 router = APIRouter(prefix="/user", tags=["user"])

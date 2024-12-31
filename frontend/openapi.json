@@ -1,1 +1,1536 @@
-{"openapi":"3.1.0","info":{"title":"carHelper server","description":"\nA tool to help you manage your car's service history, expenses, mileage, and more.\n","contact":{"name":"carHelper","url":"https://rishimo.dev/","email":"hello@rishimo.dev"},"version":"0.1.0"},"paths":{"/auth/login":{"post":{"tags":["auth"],"summary":"Login","description":"Authenticate and returns the user's JWT.","operationId":"login_auth_login_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserAuthInput"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessToken"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/auth/refresh":{"post":{"tags":["auth"],"summary":"Refresh","description":"Return a new access token from a refresh token.","operationId":"refresh_auth_refresh_post","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessToken"}}}}},"security":[{"JwtRefreshBearer":[]}]}},"/register":{"post":{"tags":["register"],"summary":"User Registration","description":"Create a new user.","operationId":"user_registration_register_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserSignupInput"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserPrivateView"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/user":{"get":{"tags":["user"],"summary":"Get User","description":"Return the requested user - public or private view.","operationId":"get_user_user_get","parameters":[{"name":"user_id","in":"query","required":true,"schema":{"type":"string","title":"User Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"anyOf":[{"$ref":"#/components/schemas/UserPublicView"},{"$ref":"#/components/schemas/UserPrivateView"}],"title":"Response Get User User Get"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"patch":{"tags":["user"],"summary":"Update User","description":"Update the user with the given input.","operationId":"update_user_user_patch","security":[{"JwtAccessBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserUpdateInput"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserPrivateView"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/user/vehicles":{"get":{"tags":["user"],"summary":"Get Vehicles","description":"Return the user's vehicles.","operationId":"get_vehicles_user_vehicles_get","security":[{"JwtAccessBearer":[]}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}},"post":{"tags":["user"],"summary":"Add Vehicle","description":"Add a vehicle to the user's vehicles.","operationId":"add_vehicle_user_vehicles_post","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"query","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"delete":{"tags":["user"],"summary":"Remove Vehicle","description":"Remove a vehicle from the user's vehicles.","operationId":"remove_vehicle_user_vehicles_delete","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"query","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/user/expenses":{"get":{"tags":["user"],"summary":"Get Expenses","description":"Return the user's expenses.","operationId":"get_expenses_user_expenses_get","security":[{"JwtAccessBearer":[]}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}},"post":{"tags":["user"],"summary":"Add Expense","description":"Add an expense to the user's expenses.","operationId":"add_expense_user_expenses_post","security":[{"JwtAccessBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Expense-Input"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"delete":{"tags":["user"],"summary":"Remove Expense","description":"Remove an expense from the user's expenses.","operationId":"remove_expense_user_expenses_delete","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"expense_id","in":"query","required":true,"schema":{"type":"string","title":"Expense Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/file":{"post":{"tags":["file"],"summary":"Upload File","description":"Upload a file.","operationId":"upload_file_file_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/FileUpload"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"type":"string","title":"Response Upload File File Post"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"JwtAccessBearer":[]}]}},"/file/{file_id}":{"get":{"tags":["file"],"summary":"Get File","description":"Get a file by its ID.\nOnly the authorized user has access to the internal filename,\nso we can use it to check if the user is the owner of the file.","operationId":"get_file_file__file_id__get","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"file_id","in":"path","required":true,"schema":{"type":"string","title":"File Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/FileReturn"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"delete":{"tags":["file"],"summary":"Delete File","description":"Delete a file.","operationId":"delete_file_file__file_id__delete","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"file_id","in":"path","required":true,"schema":{"type":"string","title":"File Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/vehicle":{"post":{"tags":["vehicle"],"summary":"Create Vehicle","description":"Create a new vehicle and associate it with the user.","operationId":"create_vehicle_vehicle_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Vehicle-Input"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Vehicle-Output"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"JwtAccessBearer":[]}]}},"/vehicle/my":{"get":{"tags":["vehicle"],"summary":"Get My Vehicles","description":"Get all vehicles belonging to the current user.","operationId":"get_my_vehicles_vehicle_my_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"items":{"$ref":"#/components/schemas/Vehicle-Output"},"type":"array","title":"Response Get My Vehicles Vehicle My Get"}}}}},"security":[{"JwtAccessBearer":[]}]}},"/vehicle/{vehicle_id}":{"get":{"tags":["vehicle"],"summary":"Get Vehicle","description":"Get a specific vehicle by ID.","operationId":"get_vehicle_vehicle__vehicle_id__get","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"path","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Vehicle-Output"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"patch":{"tags":["vehicle"],"summary":"Update Vehicle","description":"Update a vehicle's details.","operationId":"update_vehicle_vehicle__vehicle_id__patch","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"path","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","title":"Update Data"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Vehicle-Output"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"delete":{"tags":["vehicle"],"summary":"Delete Vehicle","description":"Delete a vehicle and remove it from user's vehicles.","operationId":"delete_vehicle_vehicle__vehicle_id__delete","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"path","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/vehicle/{vehicle_id}/stats":{"get":{"tags":["vehicle"],"summary":"Get Vehicle Stats","description":"Get comprehensive stats for a vehicle.","operationId":"get_vehicle_stats_vehicle__vehicle_id__stats_get","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"path","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/vehicle/{vehicle_id}/odometer":{"post":{"tags":["vehicle"],"summary":"Add Odometer Reading","description":"Add a new odometer reading for a vehicle.","operationId":"add_odometer_reading_vehicle__vehicle_id__odometer_post","security":[{"JwtAccessBearer":[]}],"parameters":[{"name":"vehicle_id","in":"path","required":true,"schema":{"type":"string","title":"Vehicle Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/OdometerReading"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},"components":{"schemas":{"AccessToken":{"properties":{"access_token":{"type":"string","title":"Access Token"},"access_token_expires":{"type":"string","format":"duration","title":"Access Token Expires"}},"type":"object","required":["access_token"],"title":"AccessToken","description":"Access token model."},"Expense-Input":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor":{"$ref":"#/components/schemas/Vendor","description":"Expense vendor"},"description":{"type":"string","title":"Description","description":"Expense description"},"cost":{"type":"number","title":"Cost","description":"Expense cost"},"file_ids":{"items":{"type":"string"},"type":"array","title":"File Ids","description":"File IDs for the expense"},"items":{"items":{"$ref":"#/components/schemas/ExpenseItem"},"type":"array","title":"Items","description":"Expense items"}},"type":"object","required":["_id","vendor","description","cost"],"title":"Expense","description":"Expense record, for any other expenses like parts, mods, tools, etc."},"Expense-Output":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor":{"$ref":"#/components/schemas/Vendor","description":"Expense vendor"},"description":{"type":"string","title":"Description","description":"Expense description"},"cost":{"type":"number","title":"Cost","description":"Expense cost"},"file_ids":{"items":{"type":"string"},"type":"array","title":"File Ids","description":"File IDs for the expense"},"items":{"items":{"$ref":"#/components/schemas/ExpenseItem"},"type":"array","title":"Items","description":"Expense items"}},"type":"object","required":["_id","vendor","description","cost"],"title":"Expense","description":"Expense record, for any other expenses like parts, mods, tools, etc."},"ExpenseItem":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"expense_type":{"$ref":"#/components/schemas/ExpenseType","description":"Expense type"},"description":{"type":"string","title":"Description","description":"Expense description"},"cost":{"type":"number","title":"Cost","description":"Expense cost"},"file_ids":{"items":{"type":"string"},"type":"array","title":"File Ids","description":"File IDs for the expense item"}},"type":"object","required":["_id","expense_type","description","cost"],"title":"ExpenseItem","description":"Expense item record, for any other expenses like parts, mods, tools, etc."},"ExpenseType":{"type":"string","enum":["PARTS","MODS","TOOLS","OTHER"],"title":"ExpenseType","description":"Expense type enum"},"File":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"type":{"$ref":"#/components/schemas/FileType","description":"File type","default":"RECEIPT"},"title":{"type":"string","title":"Title","description":"File title"},"internal_filename":{"type":"string","title":"Internal Filename","description":"File name, like an S3 object name"},"description":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Description","description":"File description"},"owner_user_id":{"type":"string","title":"Owner User Id","description":"Owner of the file"},"entity_id":{"type":"string","title":"Entity Id","description":"Entity that the file is associated with"},"page_content":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Page Content","description":"Page content of the file"}},"type":"object","required":["_id","title","internal_filename","description","owner_user_id","entity_id","page_content"],"title":"File","description":"File model for storing file metadata and references\n\nAttributes:\n    documentation_type (DocumentationType): Type of documentation (e.g., REPAIR_MANUAL)\n    title (str): Title of the documentation\n    filename (str): filename of the file (e.g., S3 object name)\n    description (Optional[str]): Optional detailed description of the document"},"FileReturn":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"type":{"$ref":"#/components/schemas/FileType","description":"File type","default":"RECEIPT"},"title":{"type":"string","title":"Title","description":"File title"},"internal_filename":{"type":"string","title":"Internal Filename","description":"File name, like an S3 object name"},"description":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Description","description":"File description"},"owner_user_id":{"type":"string","title":"Owner User Id","description":"Owner of the file"},"entity_id":{"type":"string","title":"Entity Id","description":"Entity that the file is associated with"},"page_content":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Page Content","description":"Page content of the file"},"data":{"type":"string","format":"binary","title":"Data","description":"File data"}},"type":"object","required":["_id","title","internal_filename","description","owner_user_id","entity_id","page_content","data"],"title":"FileReturn","description":"File return model for file uploads"},"FileType":{"type":"string","enum":["REPAIR_MANUAL","SERVICE_RECORD","RECEIPT","INVOICE","OWNER_MANUAL","SERVICE_INTERVAL","WARRANTY"],"title":"FileType","description":"File type enum"},"FileUpload":{"properties":{"entity_id":{"type":"string","title":"Entity Id","description":"Entity that the file is associated with"},"title":{"type":"string","title":"Title","description":"File name specified by the user"},"file":{"type":"string","format":"binary","title":"File","description":"File upload FastAPI object"},"file_type":{"$ref":"#/components/schemas/FileType","description":"File type"},"description":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Description","description":"File description"}},"type":"object","required":["entity_id","title","file","file_type","description"],"title":"FileUpload","description":"File upload model for user file uploads"},"Fuel-Input":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor_id":{"type":"string","title":"Vendor Id","description":"Fuel vendor ID"},"fuel_type":{"$ref":"#/components/schemas/FuelType","description":"Type of fuel purchased"},"units":{"type":"number","title":"Units","description":"Units of fuel purchased"},"price_per_unit":{"type":"number","title":"Price Per Unit","description":"Price per unit of fuel"},"cost":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Cost","description":"Total cost of the fuel purchase"},"attachments":{"items":{"$ref":"#/components/schemas/File"},"type":"array","title":"Attachments","description":"Documentation for the fuel purchase"}},"type":"object","required":["_id","VIN","vendor_id","fuel_type","units","price_per_unit"],"title":"Fuel","description":"Fuel purchase record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of fuel purchase\n    vendor_id (str): Fuel vendor ID\n    fuel_type (FuelType): Type of fuel purchased\n    units (float): Amount of fuel purchased\n    price_per_unit (float): Cost per unit of fuel\n    total_cost (float): Total cost of the fuel purchase"},"Fuel-Output":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor_id":{"type":"string","title":"Vendor Id","description":"Fuel vendor ID"},"fuel_type":{"$ref":"#/components/schemas/FuelType","description":"Type of fuel purchased"},"units":{"type":"number","title":"Units","description":"Units of fuel purchased"},"price_per_unit":{"type":"number","title":"Price Per Unit","description":"Price per unit of fuel"},"cost":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Cost","description":"Total cost of the fuel purchase"},"attachments":{"items":{"$ref":"#/components/schemas/File"},"type":"array","title":"Attachments","description":"Documentation for the fuel purchase"}},"type":"object","required":["_id","VIN","vendor_id","fuel_type","units","price_per_unit"],"title":"Fuel","description":"Fuel purchase record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of fuel purchase\n    vendor_id (str): Fuel vendor ID\n    fuel_type (FuelType): Type of fuel purchased\n    units (float): Amount of fuel purchased\n    price_per_unit (float): Cost per unit of fuel\n    total_cost (float): Total cost of the fuel purchase"},"FuelType":{"type":"string","enum":["Regular","Premium","Diesel","Electricity","Other"],"title":"FuelType","description":"Fuel type enum"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"Location":{"properties":{"address":{"type":"string","title":"Address"},"city":{"type":"string","title":"City"},"state":{"type":"string","title":"State"},"zip_code":{"type":"string","title":"Zip Code"},"latitude":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Latitude","description":"Latitude of the location"},"longitude":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Longitude","description":"Longitude of the location"}},"type":"object","required":["address","city","state","zip_code"],"title":"Location","description":"Location model"},"OdometerReading":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"reading":{"type":"number","title":"Reading"},"location":{"anyOf":[{"$ref":"#/components/schemas/Location"},{"type":"null"}],"description":"Odometer reading location"}},"type":"object","required":["_id","VIN","reading"],"title":"OdometerReading","description":"Vehicle odometer reading record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the reading\n    reading (float): Odometer value\n    location (Optional[Location]): Location where reading was taken"},"Service-Input":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor_id":{"type":"string","title":"Vendor Id","description":"Service vendor ID"},"cost":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Cost","description":"Total cost of all service items"},"items":{"items":{"$ref":"#/components/schemas/ServiceItem-Input"},"type":"array","title":"Items"}},"type":"object","required":["_id","VIN","vendor_id","items"],"title":"Service","description":"Complete service record for a vehicle service visit\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the service\n    vendor_id (str): Service provider ID\n    total_cost (float): Total cost of all service items\n    items (List[ServiceItem]): List of individual service items performed"},"Service-Output":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"date":{"type":"string","format":"date-time","title":"Date"},"vendor_id":{"type":"string","title":"Vendor Id","description":"Service vendor ID"},"cost":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Cost","description":"Total cost of all service items"},"items":{"items":{"$ref":"#/components/schemas/ServiceItem-Output"},"type":"array","title":"Items"}},"type":"object","required":["_id","VIN","vendor_id","items"],"title":"Service","description":"Complete service record for a vehicle service visit\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the service\n    vendor_id (str): Service provider ID\n    total_cost (float): Total cost of all service items\n    items (List[ServiceItem]): List of individual service items performed"},"ServiceItem-Input":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"service_type":{"$ref":"#/components/schemas/ServiceType","description":"Service type","default":"MAINTENANCE"},"description":{"type":"string","title":"Description","description":"Service description"},"cost":{"type":"number","title":"Cost","description":"Service cost"},"attachments":{"items":{"$ref":"#/components/schemas/File"},"type":"array","title":"Attachments","description":"Documentation for the service"}},"type":"object","required":["_id","description","cost"],"title":"ServiceItem","description":"Individual service item or task performed during a service visit\n\nAttributes:\n    service_type (ServiceType): Type of service performed (e.g., MAINTENANCE)\n    description (str): Detailed description of the service performed\n    cost (float): Cost of the individual service item\n    attachments (List[File]): Related documentation for the service item"},"ServiceItem-Output":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"service_type":{"$ref":"#/components/schemas/ServiceType","description":"Service type","default":"MAINTENANCE"},"description":{"type":"string","title":"Description","description":"Service description"},"cost":{"type":"number","title":"Cost","description":"Service cost"},"attachments":{"items":{"$ref":"#/components/schemas/File"},"type":"array","title":"Attachments","description":"Documentation for the service"}},"type":"object","required":["_id","description","cost"],"title":"ServiceItem","description":"Individual service item or task performed during a service visit\n\nAttributes:\n    service_type (ServiceType): Type of service performed (e.g., MAINTENANCE)\n    description (str): Detailed description of the service performed\n    cost (float): Cost of the individual service item\n    attachments (List[File]): Related documentation for the service item"},"ServiceType":{"type":"string","enum":["MAINTENANCE","REPAIR","MODIFICATION","INSPECTION"],"title":"ServiceType","description":"Service type enum"},"UserAuthInput":{"properties":{"email":{"type":"string","format":"email","title":"Email"},"password":{"type":"string","title":"Password"}},"type":"object","required":["email","password"],"title":"UserAuthInput","description":"User authentication input model."},"UserPrivateView":{"properties":{"username":{"type":"string","title":"Username"},"bio":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Bio","default":""},"join_date":{"type":"string","format":"date-time","title":"Join Date"},"email":{"type":"string","format":"email","title":"Email"},"first_name":{"type":"string","title":"First Name"},"last_name":{"type":"string","title":"Last Name"},"phone_number":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Phone Number"},"vehicle_ids":{"items":{"type":"string"},"type":"array","title":"Vehicle Ids"},"expenses":{"items":{"$ref":"#/components/schemas/Expense-Output"},"type":"array","title":"Expenses"},"last_login":{"type":"string","format":"date-time","title":"Last Login"}},"type":"object","required":["username","join_date","email","first_name","last_name","phone_number","last_login"],"title":"UserPrivateView","description":"Private user information only visible to the user themselves."},"UserPublicView":{"properties":{"username":{"type":"string","title":"Username"},"bio":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Bio","default":""},"join_date":{"type":"string","format":"date-time","title":"Join Date"}},"type":"object","required":["username","join_date"],"title":"UserPublicView","description":"Public user information visible to other users."},"UserSignupInput":{"properties":{"email":{"type":"string","format":"email","title":"Email"},"password":{"type":"string","title":"Password"},"username":{"type":"string","title":"Username"},"first_name":{"type":"string","title":"First Name"},"last_name":{"type":"string","title":"Last Name"}},"type":"object","required":["email","password","username","first_name","last_name"],"title":"UserSignupInput","description":"User signup input model."},"UserUpdateInput":{"properties":{"email":{"anyOf":[{"type":"string","format":"email"},{"type":"null"}],"title":"Email"},"username":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Username"},"bio":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Bio"},"first_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"First Name"},"last_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Last Name"},"phone_number":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Phone Number"}},"type":"object","title":"UserUpdateInput","description":"User update input model."},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"},"Vehicle-Input":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"make":{"type":"string","title":"Make","description":"Vehicle make"},"model":{"type":"string","title":"Model","description":"Vehicle model"},"year":{"type":"integer","title":"Year","description":"Vehicle year"},"color":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Color","description":"Vehicle color","default":"NOT_SET"},"owner_id":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Owner Id","description":"Vehicle owner ID"},"purchase_date":{"anyOf":[{"type":"string","format":"date-time"},{"type":"null"}],"title":"Purchase Date","description":"Vehicle purchase date"},"purchase_price":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Purchase Price","description":"Vehicle purchase price"},"odometer_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/OdometerReading"},"type":"array"},{"type":"null"}],"title":"Odometer Records","description":"Odometer records"},"service_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/Service-Input"},"type":"array"},{"type":"null"}],"title":"Service Records","description":"Service records"},"fuel_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/Fuel-Input"},"type":"array"},{"type":"null"}],"title":"Fuel Records","description":"Fuel records"},"expenses":{"anyOf":[{"items":{"$ref":"#/components/schemas/Expense-Input"},"type":"array"},{"type":"null"}],"title":"Expenses","description":"Expenses"},"file_ids":{"anyOf":[{"items":{"type":"string"},"type":"array"},{"type":"null"}],"title":"File Ids","description":"File IDs"}},"type":"object","required":["_id","VIN","make","model","year"],"title":"Vehicle","description":"Primary vehicle record containing all vehicle-related information\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    make (str): Vehicle manufacturer\n    model (str): Vehicle model name\n    year (int): Vehicle manufacturing year\n    color (Optional[str]): Vehicle color, defaults to \"NOT_SET\"\n    owner_id (Optional[str]): Vehicle owner ID\n    odometer_records (Optional[List[OdometerReading]]): History of odometer readings\n    service_records (Optional[List[Service]]): History of service visits\n    fuel_records (Optional[List[Fuel]]): History of fuel purchases\n    documentation (Optional[List[Documentation]]): Vehicle-related documentation"},"Vehicle-Output":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"VIN":{"type":"string","title":"Vin","description":"Vehicle VIN"},"make":{"type":"string","title":"Make","description":"Vehicle make"},"model":{"type":"string","title":"Model","description":"Vehicle model"},"year":{"type":"integer","title":"Year","description":"Vehicle year"},"color":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Color","description":"Vehicle color","default":"NOT_SET"},"owner_id":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Owner Id","description":"Vehicle owner ID"},"purchase_date":{"anyOf":[{"type":"string","format":"date-time"},{"type":"null"}],"title":"Purchase Date","description":"Vehicle purchase date"},"purchase_price":{"anyOf":[{"type":"number"},{"type":"null"}],"title":"Purchase Price","description":"Vehicle purchase price"},"odometer_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/OdometerReading"},"type":"array"},{"type":"null"}],"title":"Odometer Records","description":"Odometer records"},"service_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/Service-Output"},"type":"array"},{"type":"null"}],"title":"Service Records","description":"Service records"},"fuel_records":{"anyOf":[{"items":{"$ref":"#/components/schemas/Fuel-Output"},"type":"array"},{"type":"null"}],"title":"Fuel Records","description":"Fuel records"},"expenses":{"anyOf":[{"items":{"$ref":"#/components/schemas/Expense-Output"},"type":"array"},{"type":"null"}],"title":"Expenses","description":"Expenses"},"file_ids":{"anyOf":[{"items":{"type":"string"},"type":"array"},{"type":"null"}],"title":"File Ids","description":"File IDs"}},"type":"object","required":["_id","VIN","make","model","year"],"title":"Vehicle","description":"Primary vehicle record containing all vehicle-related information\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    make (str): Vehicle manufacturer\n    model (str): Vehicle model name\n    year (int): Vehicle manufacturing year\n    color (Optional[str]): Vehicle color, defaults to \"NOT_SET\"\n    owner_id (Optional[str]): Vehicle owner ID\n    odometer_records (Optional[List[OdometerReading]]): History of odometer readings\n    service_records (Optional[List[Service]]): History of service visits\n    fuel_records (Optional[List[Fuel]]): History of fuel purchases\n    documentation (Optional[List[Documentation]]): Vehicle-related documentation"},"Vendor":{"properties":{"_id":{"type":"string","title":"Id","description":"Document ID"},"name":{"type":"string","title":"Name","description":"Vendor name"},"website":{"anyOf":[{"type":"string","maxLength":2083,"minLength":1,"format":"uri"},{"type":"null"}],"title":"Website","description":"Vendor website"},"email":{"anyOf":[{"type":"string","format":"email"},{"type":"null"}],"title":"Email","description":"Vendor email"},"phone_number":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Phone Number","description":"Vendor phone number"},"location":{"$ref":"#/components/schemas/Location","description":"Vendor location"}},"type":"object","required":["_id","name","location"],"title":"Vendor","description":"Vendor model representing service providers and suppliers\n\nAttributes:\n    name (str): Name of the vendor/business\n    website (Optional[HttpUrl]): Vendor's website URL\n    email (Optional[EmailStr]): Contact email address\n    phone_number (Optional[str]): Contact phone number\n    location (Location): Physical location of the vendor"}},"securitySchemes":{"JwtRefreshBearer":{"type":"http","scheme":"bearer"},"JwtAccessBearer":{"type":"http","scheme":"bearer"}}}}
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "carHelper server",
+		"description": "\nA tool to help you manage your car's service history, expenses, mileage, and more.\n",
+		"contact": { "name": "carHelper", "url": "https://rishimo.dev/", "email": "hello@rishimo.dev" },
+		"version": "0.1.0"
+	},
+	"paths": {
+		"/auth/login": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Login",
+				"description": "Authenticate and returns the user's JWT.",
+				"operationId": "login_auth_login_post",
+				"requestBody": {
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/UserAuthInput" } }
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/AccessToken" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/refresh": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Refresh",
+				"description": "Return a new access token from a refresh token.",
+				"operationId": "refresh_auth_refresh_post",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/AccessToken" } }
+						}
+					}
+				},
+				"security": [{ "JwtRefreshBearer": [] }]
+			}
+		},
+		"/register": {
+			"post": {
+				"tags": ["register"],
+				"summary": "User Registration",
+				"description": "Create a new user.",
+				"operationId": "user_registration_register_post",
+				"requestBody": {
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/UserSignupInput" } }
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/UserPrivateView" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user": {
+			"get": {
+				"tags": ["user"],
+				"summary": "Get User",
+				"description": "Return the requested user - public or private view.",
+				"operationId": "get_user_user_get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "user_id",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string", "title": "User Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{ "$ref": "#/components/schemas/UserPublicView" },
+										{ "$ref": "#/components/schemas/UserPrivateView" }
+									],
+									"title": "Response Get User User Get"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["user"],
+				"summary": "Update User",
+				"description": "Update the user with the given input.",
+				"operationId": "update_user_user_patch",
+				"security": [{ "JwtAccessBearer": [] }],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/UserUpdateInput" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/UserPrivateView" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/vehicles": {
+			"get": {
+				"tags": ["user"],
+				"summary": "Get Vehicles",
+				"description": "Return the user's vehicles.",
+				"operationId": "get_vehicles_user_vehicles_get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					}
+				}
+			},
+			"post": {
+				"tags": ["user"],
+				"summary": "Add Vehicle",
+				"description": "Add a vehicle to the user's vehicles.",
+				"operationId": "add_vehicle_user_vehicles_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["user"],
+				"summary": "Remove Vehicle",
+				"description": "Remove a vehicle from the user's vehicles.",
+				"operationId": "remove_vehicle_user_vehicles_delete",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/expenses": {
+			"get": {
+				"tags": ["user"],
+				"summary": "Get Expenses",
+				"description": "Return the user's expenses.",
+				"operationId": "get_expenses_user_expenses_get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					}
+				}
+			},
+			"post": {
+				"tags": ["user"],
+				"summary": "Add Expense",
+				"description": "Add an expense to the user's expenses.",
+				"operationId": "add_expense_user_expenses_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/Expense-Input" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["user"],
+				"summary": "Remove Expense",
+				"description": "Remove an expense from the user's expenses.",
+				"operationId": "remove_expense_user_expenses_delete",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "expense_id",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string", "title": "Expense Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/file": {
+			"post": {
+				"tags": ["file"],
+				"summary": "Upload File",
+				"description": "Upload a file.",
+				"operationId": "upload_file_file_post",
+				"requestBody": {
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/FileUpload" } }
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "type": "string", "title": "Response Upload File File Post" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "JwtAccessBearer": [] }]
+			}
+		},
+		"/file/{file_id}": {
+			"get": {
+				"tags": ["file"],
+				"summary": "Get File",
+				"description": "Get a file by its ID.\nOnly the authorized user has access to the internal filename,\nso we can use it to check if the user is the owner of the file.",
+				"operationId": "get_file_file__file_id__get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "file_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "File Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/FileReturn" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["file"],
+				"summary": "Delete File",
+				"description": "Delete a file.",
+				"operationId": "delete_file_file__file_id__delete",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "file_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "File Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle": {
+			"post": {
+				"tags": ["vehicle"],
+				"summary": "Create Vehicle",
+				"description": "Create a new vehicle and associate it with the user.",
+				"operationId": "create_vehicle_vehicle_post",
+				"requestBody": {
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/Vehicle-Input" } }
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/Vehicle-Output" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "JwtAccessBearer": [] }]
+			}
+		},
+		"/vehicle/my": {
+			"get": {
+				"tags": ["vehicle"],
+				"summary": "Get My Vehicles",
+				"description": "Get all vehicles belonging to the current user.",
+				"operationId": "get_my_vehicles_vehicle_my_get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": { "$ref": "#/components/schemas/Vehicle-Output" },
+									"type": "array",
+									"title": "Response Get My Vehicles Vehicle My Get"
+								}
+							}
+						}
+					}
+				},
+				"security": [{ "JwtAccessBearer": [] }]
+			}
+		},
+		"/vehicle/{vehicle_id}": {
+			"get": {
+				"tags": ["vehicle"],
+				"summary": "Get Vehicle",
+				"description": "Get a specific vehicle by ID.",
+				"operationId": "get_vehicle_vehicle__vehicle_id__get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/Vehicle-Output" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["vehicle"],
+				"summary": "Update Vehicle",
+				"description": "Update a vehicle's details.",
+				"operationId": "update_vehicle_vehicle__vehicle_id__patch",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "type": "object", "title": "Update Data" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/Vehicle-Output" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["vehicle"],
+				"summary": "Delete Vehicle",
+				"description": "Delete a vehicle and remove it from user's vehicles.",
+				"operationId": "delete_vehicle_vehicle__vehicle_id__delete",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle/{vehicle_id}/stats": {
+			"get": {
+				"tags": ["vehicle"],
+				"summary": "Get Vehicle Stats",
+				"description": "Get comprehensive stats for a vehicle.",
+				"operationId": "get_vehicle_stats_vehicle__vehicle_id__stats_get",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle/{vehicle_id}/odometer": {
+			"post": {
+				"tags": ["vehicle"],
+				"summary": "Add Odometer Reading",
+				"description": "Add a new odometer reading for a vehicle.",
+				"operationId": "add_odometer_reading_vehicle__vehicle_id__odometer_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/OdometerReading" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle/{vehicle_id}/service": {
+			"post": {
+				"tags": ["vehicle"],
+				"summary": "Add Service Record",
+				"description": "Add a service record to a vehicle.",
+				"operationId": "add_service_record_vehicle__vehicle_id__service_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/Service-Input" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/Service-Output" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle/{vehicle_id}/fuel": {
+			"post": {
+				"tags": ["vehicle"],
+				"summary": "Add Fuel Record",
+				"description": "Add a fuel record to a vehicle.",
+				"operationId": "add_fuel_record_vehicle__vehicle_id__fuel_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": { "schema": { "$ref": "#/components/schemas/Fuel-Input" } }
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": { "schema": { "$ref": "#/components/schemas/Fuel-Output" } }
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/vehicle/{vehicle_id}/files": {
+			"post": {
+				"tags": ["vehicle"],
+				"summary": "Upload File",
+				"description": "Upload a file associated with the vehicle.",
+				"operationId": "upload_file_vehicle__vehicle_id__files_post",
+				"security": [{ "JwtAccessBearer": [] }],
+				"parameters": [
+					{
+						"name": "vehicle_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Vehicle Id" }
+					},
+					{
+						"name": "description",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "string" }, { "type": "null" }],
+							"title": "Description"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/Body_upload_file_vehicle__vehicle_id__files_post"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AccessToken": {
+				"properties": {
+					"access_token": { "type": "string", "title": "Access Token" },
+					"access_token_expires": {
+						"type": "string",
+						"format": "duration",
+						"title": "Access Token Expires"
+					}
+				},
+				"type": "object",
+				"required": ["access_token"],
+				"title": "AccessToken",
+				"description": "Access token model."
+			},
+			"Body_upload_file_vehicle__vehicle_id__files_post": {
+				"properties": { "file": { "type": "string", "format": "binary", "title": "File" } },
+				"type": "object",
+				"required": ["file"],
+				"title": "Body_upload_file_vehicle__vehicle_id__files_post"
+			},
+			"Expense-Input": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Vin",
+						"description": "Vehicle VIN"
+					},
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor": { "$ref": "#/components/schemas/Vendor", "description": "Expense vendor" },
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Expense description"
+					},
+					"cost": { "type": "number", "title": "Cost", "description": "Expense cost" },
+					"file_ids": {
+						"items": { "type": "string" },
+						"type": "array",
+						"title": "File Ids",
+						"description": "File IDs for the expense"
+					},
+					"items": {
+						"items": { "$ref": "#/components/schemas/ExpenseItem" },
+						"type": "array",
+						"title": "Items",
+						"description": "Expense items"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "vendor", "description", "cost"],
+				"title": "Expense",
+				"description": "Expense record, for any other expenses like parts, mods, tools, etc."
+			},
+			"Expense-Output": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Vin",
+						"description": "Vehicle VIN"
+					},
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor": { "$ref": "#/components/schemas/Vendor", "description": "Expense vendor" },
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Expense description"
+					},
+					"cost": { "type": "number", "title": "Cost", "description": "Expense cost" },
+					"file_ids": {
+						"items": { "type": "string" },
+						"type": "array",
+						"title": "File Ids",
+						"description": "File IDs for the expense"
+					},
+					"items": {
+						"items": { "$ref": "#/components/schemas/ExpenseItem" },
+						"type": "array",
+						"title": "Items",
+						"description": "Expense items"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "vendor", "description", "cost"],
+				"title": "Expense",
+				"description": "Expense record, for any other expenses like parts, mods, tools, etc."
+			},
+			"ExpenseItem": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"expense_type": {
+						"$ref": "#/components/schemas/ExpenseType",
+						"description": "Expense type"
+					},
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Expense description"
+					},
+					"cost": { "type": "number", "title": "Cost", "description": "Expense cost" },
+					"file_ids": {
+						"items": { "type": "string" },
+						"type": "array",
+						"title": "File Ids",
+						"description": "File IDs for the expense item"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "expense_type", "description", "cost"],
+				"title": "ExpenseItem",
+				"description": "Expense item record, for any other expenses like parts, mods, tools, etc."
+			},
+			"ExpenseType": {
+				"type": "string",
+				"enum": ["PARTS", "MODS", "TOOLS", "OTHER"],
+				"title": "ExpenseType",
+				"description": "Expense type enum"
+			},
+			"File": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"type": {
+						"$ref": "#/components/schemas/FileType",
+						"description": "File type",
+						"default": "RECEIPT"
+					},
+					"title": { "type": "string", "title": "Title", "description": "File title" },
+					"internal_filename": {
+						"type": "string",
+						"title": "Internal Filename",
+						"description": "File name, like an S3 object name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description",
+						"description": "File description"
+					},
+					"owner_user_id": {
+						"type": "string",
+						"title": "Owner User Id",
+						"description": "Owner of the file"
+					},
+					"entity_id": {
+						"type": "string",
+						"title": "Entity Id",
+						"description": "Entity that the file is associated with"
+					},
+					"page_content": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Page Content",
+						"description": "Page content of the file"
+					}
+				},
+				"type": "object",
+				"required": [
+					"_id",
+					"title",
+					"internal_filename",
+					"description",
+					"owner_user_id",
+					"entity_id",
+					"page_content"
+				],
+				"title": "File",
+				"description": "File model for storing file metadata and references\n\nAttributes:\n    documentation_type (DocumentationType): Type of documentation (e.g., REPAIR_MANUAL)\n    title (str): Title of the documentation\n    filename (str): filename of the file (e.g., S3 object name)\n    description (Optional[str]): Optional detailed description of the document"
+			},
+			"FileReturn": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"type": {
+						"$ref": "#/components/schemas/FileType",
+						"description": "File type",
+						"default": "RECEIPT"
+					},
+					"title": { "type": "string", "title": "Title", "description": "File title" },
+					"internal_filename": {
+						"type": "string",
+						"title": "Internal Filename",
+						"description": "File name, like an S3 object name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description",
+						"description": "File description"
+					},
+					"owner_user_id": {
+						"type": "string",
+						"title": "Owner User Id",
+						"description": "Owner of the file"
+					},
+					"entity_id": {
+						"type": "string",
+						"title": "Entity Id",
+						"description": "Entity that the file is associated with"
+					},
+					"page_content": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Page Content",
+						"description": "Page content of the file"
+					},
+					"data": {
+						"type": "string",
+						"format": "binary",
+						"title": "Data",
+						"description": "File data"
+					}
+				},
+				"type": "object",
+				"required": [
+					"_id",
+					"title",
+					"internal_filename",
+					"description",
+					"owner_user_id",
+					"entity_id",
+					"page_content",
+					"data"
+				],
+				"title": "FileReturn",
+				"description": "File return model for file uploads"
+			},
+			"FileType": {
+				"type": "string",
+				"enum": [
+					"REPAIR_MANUAL",
+					"SERVICE_RECORD",
+					"RECEIPT",
+					"INVOICE",
+					"OWNER_MANUAL",
+					"SERVICE_INTERVAL",
+					"WARRANTY"
+				],
+				"title": "FileType",
+				"description": "File type enum"
+			},
+			"FileUpload": {
+				"properties": {
+					"entity_id": {
+						"type": "string",
+						"title": "Entity Id",
+						"description": "Entity that the file is associated with"
+					},
+					"title": {
+						"type": "string",
+						"title": "Title",
+						"description": "File name specified by the user"
+					},
+					"file": {
+						"type": "string",
+						"format": "binary",
+						"title": "File",
+						"description": "File upload FastAPI object"
+					},
+					"file_type": { "$ref": "#/components/schemas/FileType", "description": "File type" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description",
+						"description": "File description"
+					}
+				},
+				"type": "object",
+				"required": ["entity_id", "title", "file", "file_type", "description"],
+				"title": "FileUpload",
+				"description": "File upload model for user file uploads"
+			},
+			"Fuel-Input": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor_id": { "type": "string", "title": "Vendor Id", "description": "Fuel vendor ID" },
+					"fuel_type": {
+						"$ref": "#/components/schemas/FuelType",
+						"description": "Type of fuel purchased"
+					},
+					"units": { "type": "number", "title": "Units", "description": "Units of fuel purchased" },
+					"price_per_unit": {
+						"type": "number",
+						"title": "Price Per Unit",
+						"description": "Price per unit of fuel"
+					},
+					"cost": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Cost",
+						"description": "Total cost of the fuel purchase"
+					},
+					"attachments": {
+						"items": { "$ref": "#/components/schemas/File" },
+						"type": "array",
+						"title": "Attachments",
+						"description": "Documentation for the fuel purchase"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "vendor_id", "fuel_type", "units", "price_per_unit"],
+				"title": "Fuel",
+				"description": "Fuel purchase record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of fuel purchase\n    vendor_id (str): Fuel vendor ID\n    fuel_type (FuelType): Type of fuel purchased\n    units (float): Amount of fuel purchased\n    price_per_unit (float): Cost per unit of fuel\n    total_cost (float): Total cost of the fuel purchase"
+			},
+			"Fuel-Output": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor_id": { "type": "string", "title": "Vendor Id", "description": "Fuel vendor ID" },
+					"fuel_type": {
+						"$ref": "#/components/schemas/FuelType",
+						"description": "Type of fuel purchased"
+					},
+					"units": { "type": "number", "title": "Units", "description": "Units of fuel purchased" },
+					"price_per_unit": {
+						"type": "number",
+						"title": "Price Per Unit",
+						"description": "Price per unit of fuel"
+					},
+					"cost": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Cost",
+						"description": "Total cost of the fuel purchase"
+					},
+					"attachments": {
+						"items": { "$ref": "#/components/schemas/File" },
+						"type": "array",
+						"title": "Attachments",
+						"description": "Documentation for the fuel purchase"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "vendor_id", "fuel_type", "units", "price_per_unit"],
+				"title": "Fuel",
+				"description": "Fuel purchase record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of fuel purchase\n    vendor_id (str): Fuel vendor ID\n    fuel_type (FuelType): Type of fuel purchased\n    units (float): Amount of fuel purchased\n    price_per_unit (float): Cost per unit of fuel\n    total_cost (float): Total cost of the fuel purchase"
+			},
+			"FuelType": {
+				"type": "string",
+				"enum": ["Regular", "Premium", "Diesel", "Electricity", "Other"],
+				"title": "FuelType",
+				"description": "Fuel type enum"
+			},
+			"HTTPValidationError": {
+				"properties": {
+					"detail": {
+						"items": { "$ref": "#/components/schemas/ValidationError" },
+						"type": "array",
+						"title": "Detail"
+					}
+				},
+				"type": "object",
+				"title": "HTTPValidationError"
+			},
+			"Location": {
+				"properties": {
+					"address": { "type": "string", "title": "Address" },
+					"city": { "type": "string", "title": "City" },
+					"state": { "type": "string", "title": "State" },
+					"zip_code": { "type": "string", "title": "Zip Code" },
+					"latitude": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Latitude",
+						"description": "Latitude of the location"
+					},
+					"longitude": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Longitude",
+						"description": "Longitude of the location"
+					}
+				},
+				"type": "object",
+				"required": ["address", "city", "state", "zip_code"],
+				"title": "Location",
+				"description": "Location model"
+			},
+			"OdometerReading": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"reading": { "type": "number", "title": "Reading" },
+					"location": {
+						"anyOf": [{ "$ref": "#/components/schemas/Location" }, { "type": "null" }],
+						"description": "Odometer reading location"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "reading"],
+				"title": "OdometerReading",
+				"description": "Vehicle odometer reading record\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the reading\n    reading (float): Odometer value\n    location (Optional[Location]): Location where reading was taken"
+			},
+			"Service-Input": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor_id": {
+						"type": "string",
+						"title": "Vendor Id",
+						"description": "Service vendor ID"
+					},
+					"cost": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Cost",
+						"description": "Total cost of all service items"
+					},
+					"items": {
+						"items": { "$ref": "#/components/schemas/ServiceItem-Input" },
+						"type": "array",
+						"title": "Items"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "vendor_id", "items"],
+				"title": "Service",
+				"description": "Complete service record for a vehicle service visit\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the service\n    vendor_id (str): Service provider ID\n    total_cost (float): Total cost of all service items\n    items (List[ServiceItem]): List of individual service items performed"
+			},
+			"Service-Output": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"date": { "type": "string", "format": "date-time", "title": "Date" },
+					"vendor_id": {
+						"type": "string",
+						"title": "Vendor Id",
+						"description": "Service vendor ID"
+					},
+					"cost": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Cost",
+						"description": "Total cost of all service items"
+					},
+					"items": {
+						"items": { "$ref": "#/components/schemas/ServiceItem-Output" },
+						"type": "array",
+						"title": "Items"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "vendor_id", "items"],
+				"title": "Service",
+				"description": "Complete service record for a vehicle service visit\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    date (DateTime): Date and time of the service\n    vendor_id (str): Service provider ID\n    total_cost (float): Total cost of all service items\n    items (List[ServiceItem]): List of individual service items performed"
+			},
+			"ServiceItem-Input": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"service_type": {
+						"$ref": "#/components/schemas/ServiceType",
+						"description": "Service type",
+						"default": "MAINTENANCE"
+					},
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Service description"
+					},
+					"cost": { "type": "number", "title": "Cost", "description": "Service cost" },
+					"attachments": {
+						"items": { "$ref": "#/components/schemas/File" },
+						"type": "array",
+						"title": "Attachments",
+						"description": "Documentation for the service"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "description", "cost"],
+				"title": "ServiceItem",
+				"description": "Individual service item or task performed during a service visit\n\nAttributes:\n    service_type (ServiceType): Type of service performed (e.g., MAINTENANCE)\n    description (str): Detailed description of the service performed\n    cost (float): Cost of the individual service item\n    attachments (List[File]): Related documentation for the service item"
+			},
+			"ServiceItem-Output": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"service_type": {
+						"$ref": "#/components/schemas/ServiceType",
+						"description": "Service type",
+						"default": "MAINTENANCE"
+					},
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Service description"
+					},
+					"cost": { "type": "number", "title": "Cost", "description": "Service cost" },
+					"attachments": {
+						"items": { "$ref": "#/components/schemas/File" },
+						"type": "array",
+						"title": "Attachments",
+						"description": "Documentation for the service"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "description", "cost"],
+				"title": "ServiceItem",
+				"description": "Individual service item or task performed during a service visit\n\nAttributes:\n    service_type (ServiceType): Type of service performed (e.g., MAINTENANCE)\n    description (str): Detailed description of the service performed\n    cost (float): Cost of the individual service item\n    attachments (List[File]): Related documentation for the service item"
+			},
+			"ServiceType": {
+				"type": "string",
+				"enum": ["MAINTENANCE", "REPAIR", "MODIFICATION", "INSPECTION"],
+				"title": "ServiceType",
+				"description": "Service type enum"
+			},
+			"UserAuthInput": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"password": { "type": "string", "title": "Password" }
+				},
+				"type": "object",
+				"required": ["email", "password"],
+				"title": "UserAuthInput",
+				"description": "User authentication input model."
+			},
+			"UserPrivateView": {
+				"properties": {
+					"username": { "type": "string", "title": "Username" },
+					"bio": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Bio",
+						"default": ""
+					},
+					"join_date": { "type": "string", "format": "date-time", "title": "Join Date" },
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"first_name": { "type": "string", "title": "First Name" },
+					"last_name": { "type": "string", "title": "Last Name" },
+					"phone_number": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Phone Number"
+					},
+					"vehicle_ids": { "items": { "type": "string" }, "type": "array", "title": "Vehicle Ids" },
+					"expenses": {
+						"items": { "$ref": "#/components/schemas/Expense-Output" },
+						"type": "array",
+						"title": "Expenses"
+					},
+					"last_login": { "type": "string", "format": "date-time", "title": "Last Login" }
+				},
+				"type": "object",
+				"required": [
+					"username",
+					"join_date",
+					"email",
+					"first_name",
+					"last_name",
+					"phone_number",
+					"last_login"
+				],
+				"title": "UserPrivateView",
+				"description": "Private user information only visible to the user themselves."
+			},
+			"UserPublicView": {
+				"properties": {
+					"username": { "type": "string", "title": "Username" },
+					"bio": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Bio",
+						"default": ""
+					},
+					"join_date": { "type": "string", "format": "date-time", "title": "Join Date" }
+				},
+				"type": "object",
+				"required": ["username", "join_date"],
+				"title": "UserPublicView",
+				"description": "Public user information visible to other users."
+			},
+			"UserSignupInput": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"password": { "type": "string", "title": "Password" },
+					"username": { "type": "string", "title": "Username" },
+					"first_name": { "type": "string", "title": "First Name" },
+					"last_name": { "type": "string", "title": "Last Name" }
+				},
+				"type": "object",
+				"required": ["email", "password", "username", "first_name", "last_name"],
+				"title": "UserSignupInput",
+				"description": "User signup input model."
+			},
+			"UserUpdateInput": {
+				"properties": {
+					"email": {
+						"anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
+						"title": "Email"
+					},
+					"username": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Username" },
+					"bio": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Bio" },
+					"first_name": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "First Name"
+					},
+					"last_name": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Last Name"
+					},
+					"phone_number": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Phone Number"
+					}
+				},
+				"type": "object",
+				"title": "UserUpdateInput",
+				"description": "User update input model."
+			},
+			"ValidationError": {
+				"properties": {
+					"loc": {
+						"items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+						"type": "array",
+						"title": "Location"
+					},
+					"msg": { "type": "string", "title": "Message" },
+					"type": { "type": "string", "title": "Error Type" }
+				},
+				"type": "object",
+				"required": ["loc", "msg", "type"],
+				"title": "ValidationError"
+			},
+			"Vehicle-Input": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"make": { "type": "string", "title": "Make", "description": "Vehicle make" },
+					"model": { "type": "string", "title": "Model", "description": "Vehicle model" },
+					"year": { "type": "integer", "title": "Year", "description": "Vehicle year" },
+					"color": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Color",
+						"description": "Vehicle color",
+						"default": "NOT_SET"
+					},
+					"owner_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Owner Id",
+						"description": "Vehicle owner ID"
+					},
+					"purchase_date": {
+						"anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+						"title": "Purchase Date",
+						"description": "Vehicle purchase date"
+					},
+					"purchase_price": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Purchase Price",
+						"description": "Vehicle purchase price"
+					},
+					"odometer_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/OdometerReading" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Odometer Records",
+						"description": "Odometer records"
+					},
+					"service_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Service-Input" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Service Records",
+						"description": "Service records"
+					},
+					"fuel_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Fuel-Input" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Fuel Records",
+						"description": "Fuel records"
+					},
+					"expenses": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Expense-Input" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Expenses",
+						"description": "Expenses"
+					},
+					"file_ids": {
+						"anyOf": [{ "items": { "type": "string" }, "type": "array" }, { "type": "null" }],
+						"title": "File Ids",
+						"description": "File IDs"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "make", "model", "year"],
+				"title": "Vehicle",
+				"description": "Primary vehicle record containing all vehicle-related information\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    make (str): Vehicle manufacturer\n    model (str): Vehicle model name\n    year (int): Vehicle manufacturing year\n    color (Optional[str]): Vehicle color, defaults to \"NOT_SET\"\n    owner_id (Optional[str]): Vehicle owner ID\n    odometer_records (Optional[List[OdometerReading]]): History of odometer readings\n    service_records (Optional[List[Service]]): History of service visits\n    fuel_records (Optional[List[Fuel]]): History of fuel purchases\n    documentation (Optional[List[Documentation]]): Vehicle-related documentation"
+			},
+			"Vehicle-Output": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"VIN": { "type": "string", "title": "Vin", "description": "Vehicle VIN" },
+					"make": { "type": "string", "title": "Make", "description": "Vehicle make" },
+					"model": { "type": "string", "title": "Model", "description": "Vehicle model" },
+					"year": { "type": "integer", "title": "Year", "description": "Vehicle year" },
+					"color": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Color",
+						"description": "Vehicle color",
+						"default": "NOT_SET"
+					},
+					"owner_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Owner Id",
+						"description": "Vehicle owner ID"
+					},
+					"purchase_date": {
+						"anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+						"title": "Purchase Date",
+						"description": "Vehicle purchase date"
+					},
+					"purchase_price": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Purchase Price",
+						"description": "Vehicle purchase price"
+					},
+					"odometer_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/OdometerReading" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Odometer Records",
+						"description": "Odometer records"
+					},
+					"service_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Service-Output" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Service Records",
+						"description": "Service records"
+					},
+					"fuel_records": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Fuel-Output" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Fuel Records",
+						"description": "Fuel records"
+					},
+					"expenses": {
+						"anyOf": [
+							{ "items": { "$ref": "#/components/schemas/Expense-Output" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Expenses",
+						"description": "Expenses"
+					},
+					"file_ids": {
+						"anyOf": [{ "items": { "type": "string" }, "type": "array" }, { "type": "null" }],
+						"title": "File Ids",
+						"description": "File IDs"
+					}
+				},
+				"type": "object",
+				"required": ["_id", "VIN", "make", "model", "year"],
+				"title": "Vehicle",
+				"description": "Primary vehicle record containing all vehicle-related information\n\nAttributes:\n    VIN (str): Vehicle Identification Number\n    make (str): Vehicle manufacturer\n    model (str): Vehicle model name\n    year (int): Vehicle manufacturing year\n    color (Optional[str]): Vehicle color, defaults to \"NOT_SET\"\n    owner_id (Optional[str]): Vehicle owner ID\n    odometer_records (Optional[List[OdometerReading]]): History of odometer readings\n    service_records (Optional[List[Service]]): History of service visits\n    fuel_records (Optional[List[Fuel]]): History of fuel purchases\n    documentation (Optional[List[Documentation]]): Vehicle-related documentation"
+			},
+			"Vendor": {
+				"properties": {
+					"_id": { "type": "string", "title": "Id", "description": "Document ID" },
+					"name": { "type": "string", "title": "Name", "description": "Vendor name" },
+					"website": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 2083, "minLength": 1, "format": "uri" },
+							{ "type": "null" }
+						],
+						"title": "Website",
+						"description": "Vendor website"
+					},
+					"email": {
+						"anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }],
+						"title": "Email",
+						"description": "Vendor email"
+					},
+					"phone_number": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Phone Number",
+						"description": "Vendor phone number"
+					},
+					"location": { "$ref": "#/components/schemas/Location", "description": "Vendor location" }
+				},
+				"type": "object",
+				"required": ["_id", "name", "location"],
+				"title": "Vendor",
+				"description": "Vendor model representing service providers and suppliers\n\nAttributes:\n    name (str): Name of the vendor/business\n    website (Optional[HttpUrl]): Vendor's website URL\n    email (Optional[EmailStr]): Contact email address\n    phone_number (Optional[str]): Contact phone number\n    location (Location): Physical location of the vendor"
+			}
+		},
+		"securitySchemes": {
+			"JwtRefreshBearer": { "type": "http", "scheme": "bearer" },
+			"JwtAccessBearer": { "type": "http", "scheme": "bearer" }
+		}
+	}
+}

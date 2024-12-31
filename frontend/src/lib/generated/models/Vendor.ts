@@ -39,3 +39,4 @@ export type Vendor = {
      */
     location: Location;
 };
+

@@ -1,8 +1,9 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
-from models import OdometerReading, User, Vehicle
+from models import File as VehicleFile
+from models import Fuel, OdometerReading, Service, User, Vehicle
 from server.utils import current_user
 
 router = APIRouter(prefix="/vehicle", tags=["vehicle"])
@@ -139,3 +140,63 @@ async def add_odometer_reading(
     await vehicle.save()
 
     return reading
+
+
+@router.post("/{vehicle_id}/service", response_model=Service)
+async def add_service_record(
+    vehicle_id: str, record: Service, user: User = Depends(current_user)
+):
+    """Add a service record to a vehicle."""
+    if vehicle_id not in user.vehicle_ids:
+        raise HTTPException(403, "You don't have access to this vehicle")
+
+    vehicle = await Vehicle.find_by_id(vehicle_id)
+    if not vehicle:
+        raise HTTPException(404, "Vehicle not found")
+
+    await vehicle.add_service_record(record)
+    return record
+
+
+@router.post("/{vehicle_id}/fuel", response_model=Fuel)
+async def add_fuel_record(
+    vehicle_id: str, record: Fuel, user: User = Depends(current_user)
+):
+    """Add a fuel record to a vehicle."""
+    if vehicle_id not in user.vehicle_ids:
+        raise HTTPException(403, "You don't have access to this vehicle")
+
+    vehicle = await Vehicle.find_by_id(vehicle_id)
+    if not vehicle:
+        raise HTTPException(404, "Vehicle not found")
+
+    await vehicle.add_fuel_record(record)
+    return record
+
+
+@router.post("/{vehicle_id}/files")
+async def upload_file(
+    vehicle_id: str,
+    file: UploadFile = File(...),
+    description: Optional[str] = None,
+    user: User = Depends(current_user),
+):
+    """Upload a file associated with the vehicle."""
+    if vehicle_id not in user.vehicle_ids:
+        raise HTTPException(403, "You don't have access to this vehicle")
+
+    vehicle = await Vehicle.find_by_id(vehicle_id)
+    if not vehicle:
+        raise HTTPException(404, "Vehicle not found")
+
+    # Read and store file
+    contents = await file.read()
+    vehicle_file = VehicleFile(
+        filename=file.filename,
+        content_type=file.content_type,
+        description=description,
+        data=contents,
+    )
+
+    await vehicle.add_file(vehicle_file)
+    return vehicle_file
